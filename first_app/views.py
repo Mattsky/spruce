@@ -2,6 +2,18 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from first_app.models import UpdateablePackageList, InstalledPackageList, HeldPackageList
 from django.db import connection
+from first_app.ubuntu_functions import *
+from first_app.core_functions import *
+from first_app.sql_functions import *
+from first_app.centos7_functions import *
+import paramiko
+
+#TEST_ADDR = '192.168.0.22'
+TEST_DB_HOST = '192.168.0.22'
+TEST_USER = 'matt'
+TEST_PASS = 'password'
+TEST_DB = 'testdb'
+
 
 # Create your views here.
 
@@ -34,9 +46,20 @@ def held(request):
 	packageList = {'heldpackages': heldpackages}
 
 	if request.method == 'POST':
+		TEST_ADDR = syshost
+		ssh = paramiko.SSHClient()
+
+		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+		ssh.connect(TEST_ADDR, username=TEST_USER, key_filename='/home/matt/.ssh/id_rsa', timeout=10)
+
 		packages_to_unhold = request.POST.getlist('package')
 		for x in packages_to_unhold:
 			print(x)
+			ubuntu_unhold_packages(ssh, x)
+		held_packages = ubuntu_get_held_packages(ssh)
+		ubuntu_create_host_held_package_table(TEST_DB_HOST, TEST_DB, TEST_USER, TEST_PASS, syshost, held_packages)
+
 
 	return render(request,'first_app/held.html',context=packageList)
 
