@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Django Level 2</title>
+		<link rel="stylesheet" href="{% static "css/mystyle.css" %}"/>
+	</head>
+	<body>
+		<h1>Hi welcome to Django level 2!</h1>
+		<h2>Here are the installed packages on {{ request.GET.hostname }}:</h2>
+
+		<div class="djangtwo">
+			{% if installedpackages %}
+			<table>
+				<thead>
+					<th>Package Name</th>
+					<th>Current Version</th>
+				</thead>
+				{% for package in installedpackages %}
+				<tr>
+					<td>{{ package.package }}</td>
+					<td>{{ package.currentver }}</td>
+				</tr>	
+				{% endfor %}
+			</table>
+			{% else %}
+			<p>No installed package records found!</p>
+			{% endif %}
+
+		</div>
+
+	</body>
+</html>
