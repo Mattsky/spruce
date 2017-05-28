@@ -113,3 +113,64 @@ def rescan_test(scan_address, TEST_USER):
             print(x)
             update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2])
             update_package_entry.save()
+
+def unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER):
+    ssh = paramiko.SSHClient()
+
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename='/home/matt/.ssh/id_rsa', timeout=10)
+    os_id = os_ident(ssh)
+    if 'Ubuntu' in os_id[0]:
+        for x in packages_to_unhold:
+            print(x)
+            ubuntu_unhold_packages(ssh, x)
+            HeldPackageList.objects.filter(host_name=host_id).filter(package=x).delete()
+        held_packages = ubuntu_get_held_packages(ssh)
+        #ubuntu_create_host_held_package_table(TEST_DB_HOST, TEST_DB, TEST_USER, TEST_PASS, syshost, held_packages)
+
+    if 'CentOS' in os_id[0]:
+        for x in packages_to_unhold:
+            print(x)
+            centos7_unlock_packages(ssh, x)
+            HeldPackageList.objects.filter(host_name=host_id).filter(package=x).delete()
+        held_packages = centos7_get_locked_packages(ssh)
+
+def update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER):
+    ssh = paramiko.SSHClient()
+
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    host_address = Hosts.objects.only('hostname').get(hostname=host_id)
+    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename='/home/matt/.ssh/id_rsa', timeout=10)
+    os_id = os_ident(ssh)
+    if 'Ubuntu' in os_id[0]:
+        for x in packages_to_update:
+            print(x)
+            ubuntu_apply_package_updates(ssh, x)
+            #UpdateablePackageList.objects.filter(host_name=host_id).filter(package=x).delete()
+        held_packages = ubuntu_get_held_packages(ssh)
+        UpdateablePackageList.objects.filter(host_name=host_id).delete()
+        #ubuntu_create_host_held_package_table(TEST_DB_HOST, TEST_DB, TEST_USER, TEST_PASS, syshost, held_packages)
+        ubuntu_update_packages = centos7_get_package_updates(ssh)
+        for x in ubuntu_update_packages:
+            print(x)
+            update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2])
+            update_package_entry.save()
+
+    if 'CentOS' in os_id[0]:
+        for x in packages_to_update:
+            print(x)
+            centos7_update_packages(ssh, x)
+            #UpdateablePackageList.objects.filter(host_name=host_id).filter(package=x).delete()
+        held_packages = centos7_get_locked_packages(ssh)
+        UpdateablePackageList.objects.filter(host_name=host_id).delete()
+        centos_update_packages = centos7_get_package_updates(ssh)
+        for x in centos_update_packages:
+            print(x)
+            for z in centos_update_packages:
+                print(z)
+                if x[0] in z:
+                    current_package_version = z[2]
+            update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=current_package_version,newver=x[2])
+            update_package_entry.save()

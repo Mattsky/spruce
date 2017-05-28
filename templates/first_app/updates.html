@@ -12,22 +12,28 @@
 
 		<div class="djangtwo">
 			{% if availableupdates %}
+			<form method="POST">
 			<table>
 				<thead>
 					<th>Package Name</th>
 					<th>Current Version</th>
 					<th>Available Update Version</th>
+					<th>Update?</th>
 				</thead>
 				{% for package in availableupdates %}
 				<tr>
 					<td>{{ package.package }}</td>
 					<td>{{ package.currentver }}</td>
 					<td>{{ package.newver }}</td>
+					<td><input type="checkbox" name="package" value="{{ package.package }}"></td>
 				</tr>	
 				{% endfor %}
 			</table>
+			{% csrf_token %}
+				<input type="submit" class="btn btn-primary" value="Submit">
+			</form>
 			{% else %}
-			<p>No held package records found!</p>
+			<p>No package updates found!</p>
 			{% endif %}
 
 		</div>

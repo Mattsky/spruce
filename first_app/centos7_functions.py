@@ -108,3 +108,22 @@ def centos7_unlock_packages(ssh, packagelist):
         return("SUCCESS")
     except:
         return("FAILURE")
+
+def centos7_update_packages(ssh, packagelist):
+    
+    try:
+        print(type(packagelist))
+        package_list_string = ""
+        # isinstance list check may need changing to tuple when results pulled from DB
+        if isinstance(packagelist, list):
+            for x in packagelist:
+                package_list_string = package_list_string + x + ' '
+            stdin, stdout, stderr = ssh.exec_command('sudo yum -y update ' + package_list_string)
+            exit_status = stdout.channel.recv_exit_status()
+        elif isinstance(packagelist, str):
+            stdin, stdout, stderr = ssh.exec_command('sudo yum -y update ' + packagelist)
+            exit_status = stdout.channel.recv_exit_status()
+  
+        return("SUCCESS")
+    except:
+        return("FAILURE")
