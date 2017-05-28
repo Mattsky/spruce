@@ -13,16 +13,19 @@
 
 		<div class="djangtwo">
 			{% if hosts %}
-			<table>
-				<thead>
-					<th>Host Name</th>
-				</thead>
-				{% for sysaddr in hosts %}
-				<tr>
-					<td><a href="held?hostname={{ sysaddr }}">{{ sysaddr }}</a></td>
-				</tr>	
-				{% endfor %}
-			</table>
+			<form method="POST">
+				<table>
+					<thead>
+						<th>Host Name</th><th>Rescan?</th>
+					</thead>
+					{% for sysaddr in hosts %}
+					<tr>
+						<td><a href="held?hostname={{ sysaddr }}">{{ sysaddr }}</a></td><td><input name="address" value="{{ sysaddr }}" type="submit"></td>
+					</tr>	
+					{% endfor %}
+				</table>
+				{% csrf_token %}
+			</form>
 			{% else %}
 			<p>No access records found!</p>
 			{% endif %}

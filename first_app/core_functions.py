@@ -1,3 +1,9 @@
+from first_app.models import UpdateablePackageList, InstalledPackageList, HeldPackageList, Hosts, HostInfo
+from django.db import connection
+from first_app.ubuntu_functions import *
+from first_app.core_functions import *
+from first_app.sql_functions import *
+from first_app.centos7_functions import *
 import paramiko
 
 def os_ident(ssh):
@@ -47,3 +53,63 @@ def get_hostname(ssh):
         return(sys_hostname)
     except:
         return("ERROR")
+
+def rescan_test(scan_address, TEST_USER):
+
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    # Delete existing info prior to refresh and recreate, just in case
+    Hosts.objects.filter(hostname=scan_address).delete()
+    host_entry = Hosts(hostname=scan_address)
+    host_entry.save()
+
+    ssh.connect(scan_address, username=TEST_USER, key_filename='/home/matt/.ssh/id_rsa', timeout=10)
+    os_id = os_ident(ssh)
+    print(os_id)
+    
+    host_address = Hosts.objects.only('hostname').get(hostname=scan_address)
+    #FIX THIS BIT - REARRANGE MODELS AS REQUIRED!
+    host_name = get_hostname(ssh)
+    #Strip whitespace from end of hostname
+    host_name = host_name.rstrip()
+    host_info_entry = HostInfo(host_name=host_address, host_address=host_name, os_name=os_id[0], os_version=os_id[1])
+    host_info_entry.save()
+            
+    if 'CentOS' in os_id[0]:
+        centos_installed_packages = centos7_get_all_installed_packages(ssh)
+        for x in centos_installed_packages:
+            print(x)
+            installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[2])
+            installed_package_entry.save()
+        centos_held_packages = centos7_get_locked_packages(ssh)
+        for x in centos_held_packages:
+            print(x)
+            held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
+            held_package_entry.save()
+        centos_update_packages = centos7_get_package_updates(ssh)
+        for x in centos_update_packages:
+            print(x)
+            for z in centos_installed_packages:
+                print(z)
+                if x[0] in z:
+                    current_package_version = z[2]
+            update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=current_package_version,newver=x[2])
+            update_package_entry.save()
+
+    if 'Ubuntu' in os_id[0]:
+        ubuntu_installed_packages = ubuntu_get_all_installed_packages(ssh)
+        for x in ubuntu_installed_packages:
+            print(x)
+            installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[1])
+            installed_package_entry.save()
+        ubuntu_held_packages = ubuntu_get_held_packages(ssh)
+        for x in ubuntu_held_packages:
+            print(x)
+            held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
+            held_package_entry.save()
+        ubuntu_update_packages = centos7_get_package_updates(ssh)
+        for x in ubuntu_update_packages:
+            print(x)
+            update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2])
+            update_package_entry.save()
