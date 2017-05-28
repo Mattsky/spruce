@@ -118,5 +118,21 @@ def scan(request):
 				update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=current_package_version,newver=x[2])
 				update_package_entry.save()
 
+		if 'Ubuntu' in os_id[0]:
+			ubuntu_installed_packages = ubuntu_get_all_installed_packages(ssh)
+			for x in ubuntu_installed_packages:
+				print(x)
+				installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[1])
+				installed_package_entry.save()
+			ubuntu_held_packages = ubuntu_get_held_packages(ssh)
+			for x in ubuntu_held_packages:
+				print(x)
+				held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
+				held_package_entry.save()
+			ubuntu_update_packages = centos7_get_package_updates(ssh)
+			for x in ubuntu_update_packages:
+				print(x)
+				update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2])
+				update_package_entry.save()
 
 	return render(request,'first_app/scan.html')
