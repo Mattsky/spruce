@@ -12,20 +12,14 @@
 		<h2>Here are your access records:</h2>
 
 		<div class="djangtwo">
-			{% if tables %}
+			{% if hosts %}
 			<table>
 				<thead>
-					<th>Table Name</th>
+					<th>Host Name</th>
 				</thead>
-				{% for acc in tables %}
+				{% for sysaddr in hosts %}
 				<tr>
-					{% if 'held' in acc %}
-					<td><a href="held?hostname={% extract_hostname acc %}">{{ acc }}</a></td>
-					{% elif 'packages' in acc %}
-					<td><a href="installed?hostname={% extract_hostname acc %}">{{ acc }}</a></td>
-					{% else %}
-					<td><a href="updates?hostname={% extract_hostname acc %}">{{ acc }}</a></td>
-					{% endif %}
+					<td><a href="held?hostname={{ sysaddr }}">{{ sysaddr }}</a></td>
 				</tr>	
 				{% endfor %}
 			</table>

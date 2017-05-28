@@ -11,7 +11,7 @@
 		<h2>Here are the installed packages on {{ request.GET.hostname }}:</h2>
 
 		<div class="djangtwo">
-			{% if installedpackages %}
+			{% if installedpackages.all %}
 			<table>
 				<thead>
 					<th>Package Name</th>
@@ -26,6 +26,7 @@
 			</table>
 			{% else %}
 			<p>No installed package records found!</p>
+			
 			{% endif %}
 
 		</div>

@@ -14,7 +14,9 @@ def os_ident(ssh):
                     OS = str.split(line)[0]
                     Version = str.split(line)[3]
                     Version = Version.split('.')[0]
-                    return(OS + ' ' + Version)
+                    #return(OS + ' ' + Version)
+                    osinfo = [OS, Version]
+                    return(osinfo)
                 
         except IOError:
             pass
@@ -28,10 +30,20 @@ def os_ident(ssh):
                     OS = str.split(line)[0]
                     Version = str.split(line)[1]
                     Version = '.'.join(Version.split('.',2)[0:2])
-                    return(OS + ' ' + Version)
+                    #return(OS + ' ' + Version)
+                    osinfo = [OS, Version]
+                    return(osinfo)
 
         except IOError:
             print("File not found!")
 
     except paramiko.SSHException:
         print("Connection error")
+
+def get_hostname(ssh):
+    try:
+        stdin, stdout, stderr = ssh.exec_command('hostname')
+        sys_hostname = stdout.read()
+        return(sys_hostname)
+    except:
+        return("ERROR")

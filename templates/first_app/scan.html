@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+{% load filters %}
+{% load staticfiles %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Django Level 2</title>
+		<link rel="stylesheet" href="{% static "css/mystyle.css" %}"/>
+	</head>
+	<body>
+		<h1>Hi welcome to Django level 2!</h1>
+		<h2>SCAN PAGE.</h2>
+
+		<div class="djangtwo">
+			<form method="POST">
+			<p>Please enter the IP address to scan.</p>
+			<input type="text" name="address">
+			<input type="submit" value="Submit">
+			{% csrf_token %}
+			</form>
+		</div>
+
+	</body>
+</html>
