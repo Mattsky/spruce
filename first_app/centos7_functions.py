@@ -64,9 +64,13 @@ def centos7_get_locked_packages(ssh):
             # ...then strip the trailing ".*"...
             package_info = package_info.split('.*')[0]
             # ...and finally split the remainder into package name and version.
-            package_name = package_info.split('-')[0]
-            package_version = package_info.split('-',1)[1]
-
+            #package_name = package_info.split('-')[0]
+            #package_version = package_info.split('-',1)[1]
+            package_name = re.split('(\d.*)', package_info)[0]
+            package_name = package_name[:-1]
+            package_version = re.split('(\d.*)', package_info)[1]
+            print(package_name)
+            print(package_version)
             locked_package_info.append([package_name, package_version])
     # Return alphabetically sorted list of packages
     return(sorted(locked_package_info))

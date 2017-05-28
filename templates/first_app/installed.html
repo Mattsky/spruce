@@ -11,19 +11,27 @@
 		<h2>Here are the installed packages on {{ request.GET.hostname }}:</h2>
 
 		<div class="djangtwo">
-			{% if installedpackages.all %}
+			{% if installedpackages %}
+			<form method="POST">
 			<table>
 				<thead>
 					<th>Package Name</th>
 					<th>Current Version</th>
+					<th>Lock (Single)</th>
+					<th>Lock (Multiple)</th>
 				</thead>
 				{% for package in installedpackages %}
 				<tr>
 					<td>{{ package.package }}</td>
 					<td>{{ package.currentver }}</td>
+					<td><input name="package" value="{{ package.package }}" type="submit"></td>
+					<td><input type="checkbox" name="package" value="{{ package.package }}"></td>
 				</tr>	
 				{% endfor %}
 			</table>
+			{% csrf_token %}
+			<input type="submit" class="btn btn-primary" value="Submit">
+			</form>
 			{% else %}
 			<p>No installed package records found!</p>
 			

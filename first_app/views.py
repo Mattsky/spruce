@@ -70,6 +70,17 @@ def installed(request):
 	host_id = Hosts.objects.only('id').get(hostname=syshost)
 	installedpackages = InstalledPackageList.objects.filter(host_name=host_id)
 	packageList = {'installedpackages': installedpackages}
+
+	if request.method == 'POST':
+		packages_to_lock = request.POST.getlist('package')
+		TEST_ADDR = syshost
+		for x in packages_to_lock:
+			print(x)
+		hold_packages(host_id, packages_to_lock, TEST_ADDR, TEST_USER)
+		#TEST_ADDR = syshost
+		
+		#unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER)
+
 	return render(request,'first_app/installed.html',context=packageList)
 
 def scan(request):
