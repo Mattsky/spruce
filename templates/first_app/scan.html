@@ -14,7 +14,7 @@
 		<div class="djangtwo">
 			<form method="POST">
 			<p>Please enter the IP address to scan.</p>
-			<input type="text" name="address">
+			<input type="text" name="address" required pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$">
 			<input type="submit" value="Submit">
 			{% csrf_token %}
 			</form>

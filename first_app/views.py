@@ -85,7 +85,9 @@ def installed(request):
 
 def scan(request):
 
+	
 	if request.method == "POST":
+		
 		scan_address = request.POST['address']
 		print(scan_address)
 
