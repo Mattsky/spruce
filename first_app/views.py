@@ -24,9 +24,17 @@ def index(request):
 	host_list = {'hosts':list_of_hosts}
 
 	if request.method == "POST":
-		scan_address = request.POST['address']
-		rescan_test(scan_address, TEST_USER)
-		return render(request, 'first_app/index.html', context=host_list)
+		if 'address' in request.POST.keys() and request.POST['address']:
+			scan_address = request.POST['address']
+		
+			rescan(scan_address, TEST_USER)
+			return render(request, 'first_app/index.html', context=host_list)
+
+		if 'delete' in request.POST.keys() and request.POST['delete']:
+			scan_address = request.POST['delete']
+		
+			delete_info(scan_address)
+			return render(request, 'first_app/index.html', context=host_list)
 
 	return render(request,'first_app/index.html',context=host_list)
 
@@ -85,14 +93,19 @@ def installed(request):
 
 def scan(request):
 
-	
-	if request.method == "POST":
+	try:
+		if request.method == "POST":
 		
-		scan_address = request.POST['address']
-		print(scan_address)
+			scan_address = request.POST['address']
+			print(scan_address)
 
-		rescan_test(scan_address, TEST_USER)
-		return render(request, 'first_app/scan.html')
+			rescan(scan_address, TEST_USER)
+			return render(request, 'first_app/scan.html')
 
 
-	return render(request,'first_app/scan.html')
+		return render(request,'first_app/scan.html')
+
+	except OSError as e:
+		return render(request,'first_app/scan.html')
+	except NoValidConnectionsError as e:
+		return render(request,'first_app/scan.html')

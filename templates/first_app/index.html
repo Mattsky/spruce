@@ -16,7 +16,7 @@
 			<form method="POST">
 				<table>
 					<thead>
-						<th>Host Name / IP Address</th><th>Software Updates</th><th>Locked Packages</th><th>All Installed Packages</th><th>Rescan?</th>
+						<th>Host Name / IP Address</th><th>Software Updates</th><th>Locked Packages</th><th>All Installed Packages</th><th>Rescan?</th><th><p style="color:red">DELETE?</p></th>
 					</thead>
 					{% for sysaddr in hosts %}
 					<tr>
@@ -25,6 +25,7 @@
 						<td><a href="held?hostname={{ sysaddr }}">View</a></td>
 						<td><a href="installed?hostname={{ sysaddr }}">View</a></td>
 						<td><input name="address" value="{{ sysaddr }}" type="submit"></td>
+						<td><input name="delete" value="{{ sysaddr }}" type="submit"></td>
 					</tr>	
 					{% endfor %}
 				</table>

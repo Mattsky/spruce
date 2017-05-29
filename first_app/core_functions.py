@@ -54,7 +54,7 @@ def get_hostname(ssh):
     except:
         return("ERROR")
 
-def rescan_test(scan_address, TEST_USER):
+def rescan(scan_address, TEST_USER):
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -204,3 +204,11 @@ def hold_packages(host_id, packages_to_hold, TEST_ADDR, TEST_USER):
             print(x)
             held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
             held_package_entry.save()
+
+def delete_info(scan_address):
+
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    # Delete existing info prior to refresh and recreate, just in case
+    Hosts.objects.filter(hostname=scan_address).delete()
