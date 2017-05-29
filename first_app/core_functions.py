@@ -54,7 +54,7 @@ def get_hostname(ssh):
     except:
         return("ERROR")
 
-def rescan(scan_address, TEST_USER):
+def rescan(scan_address, TEST_USER, keyfile):
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -64,7 +64,7 @@ def rescan(scan_address, TEST_USER):
     host_entry = Hosts(hostname=scan_address)
     host_entry.save()
 
-    ssh.connect(scan_address, username=TEST_USER, key_filename='/home/matt/.ssh/id_rsa', timeout=10)
+    ssh.connect(scan_address, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     print(os_id)
     
@@ -114,12 +114,12 @@ def rescan(scan_address, TEST_USER):
             update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2])
             update_package_entry.save()
 
-def unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER):
+def unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER, keyfile):
     ssh = paramiko.SSHClient()
 
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename='/home/matt/.ssh/id_rsa', timeout=10)
+    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
         for x in packages_to_unhold:
@@ -136,13 +136,13 @@ def unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER):
             HeldPackageList.objects.filter(host_name=host_id).filter(package=x).delete()
         held_packages = centos7_get_locked_packages(ssh)
 
-def update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER):
+def update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER, keyfile):
     ssh = paramiko.SSHClient()
 
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     host_address = Hosts.objects.only('hostname').get(hostname=host_id)
-    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename='/home/matt/.ssh/id_rsa', timeout=10)
+    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
         for x in packages_to_update:
@@ -175,12 +175,12 @@ def update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER):
             update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=current_package_version,newver=x[2])
             update_package_entry.save()
 
-def hold_packages(host_id, packages_to_hold, TEST_ADDR, TEST_USER):
+def hold_packages(host_id, packages_to_hold, TEST_ADDR, TEST_USER, keyfile):
     ssh = paramiko.SSHClient()
 
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     host_address = Hosts.objects.only('hostname').get(hostname=host_id)
-    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename='/home/matt/.ssh/id_rsa', timeout=10)
+    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
         for x in packages_to_hold:

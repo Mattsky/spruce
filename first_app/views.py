@@ -14,7 +14,7 @@ TEST_DB_HOST = '192.168.0.22'
 TEST_USER = 'matt'
 TEST_PASS = 'password'
 TEST_DB = 'testdb'
-
+KEYFILE = '/Users/matt/.ssh/id_rsa'
 
 # Create your views here.
 
@@ -27,7 +27,7 @@ def index(request):
 		if 'address' in request.POST.keys() and request.POST['address']:
 			scan_address = request.POST['address']
 		
-			rescan(scan_address, TEST_USER)
+			rescan(scan_address, TEST_USER, KEYFILE)
 			return render(request, 'first_app/index.html', context=host_list)
 
 		if 'delete' in request.POST.keys() and request.POST['delete']:
@@ -53,7 +53,7 @@ def held(request):
 		packages_to_unhold = request.POST.getlist('package')
 		TEST_ADDR = syshost
 		
-		unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER)
+		unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER, KEYFILE)
 
 	return render(request,'first_app/held.html',context=packageList)
 
@@ -68,7 +68,7 @@ def updates(request):
 		packages_to_update = request.POST.getlist('package')
 		TEST_ADDR = syshost
 		
-		update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER)
+		update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER, KEYFILE)
 
 	return render(request,'first_app/updates.html',context=updateList)
 
@@ -84,7 +84,7 @@ def installed(request):
 		TEST_ADDR = syshost
 		for x in packages_to_lock:
 			print(x)
-		hold_packages(host_id, packages_to_lock, TEST_ADDR, TEST_USER)
+		hold_packages(host_id, packages_to_lock, TEST_ADDR, TEST_USER, KEYFILE)
 		#TEST_ADDR = syshost
 		
 		#unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER)
@@ -99,7 +99,7 @@ def scan(request):
 			scan_address = request.POST['address']
 			print(scan_address)
 
-			rescan(scan_address, TEST_USER)
+			rescan(scan_address, TEST_USER, KEYFILE)
 			return render(request, 'first_app/scan.html')
 
 
