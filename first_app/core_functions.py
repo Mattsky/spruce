@@ -1,5 +1,5 @@
 from first_app.models import UpdateablePackageList, InstalledPackageList, HeldPackageList, Hosts, HostInfo
-from django.db import connection
+from django.db import connection, transaction
 from first_app.ubuntu_functions import *
 from first_app.core_functions import *
 from first_app.sql_functions import *
@@ -98,11 +98,18 @@ def rescan(scan_address, TEST_USER, keyfile):
             update_package_entry.save()
 
     if 'Ubuntu' in os_id[0]:
-        ubuntu_installed_packages = ubuntu_get_all_installed_packages(ssh)
+        ubuntu_installed_packages = ubuntu_get_all_installed_packages_new(ssh)
+        ubuntu_converted_package_list = []
         for x in ubuntu_installed_packages:
-            print(x)
-            installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[1])
-            installed_package_entry.save()
+            # BEGIN ORIGINAL WORKING CODE
+            #print(x)
+            #installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[1])
+            #installed_package_entry.save()
+            # END ORIGINAL WORKING CODE
+            # BEGIN BULK CREATE CODE
+            ubuntu_converted_package_list.append(InstalledPackageList(host_name=host_address, package=x[0], currentver=x[1]))
+        InstalledPackageList.objects.bulk_create(ubuntu_converted_package_list)
+            # END BULK CREATE CODE
         ubuntu_held_packages = ubuntu_get_held_packages(ssh)
         for x in ubuntu_held_packages:
             print(x)
@@ -211,5 +218,5 @@ def delete_info(scan_address):
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    # Delete existing info prior to refresh and recreate, just in case
+    # Delete existing info - this cascades down to all other linked tables (foreign keys)
     Hosts.objects.filter(hostname=scan_address).delete()

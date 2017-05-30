@@ -63,7 +63,31 @@ def ubuntu_get_all_installed_packages(ssh):
         y = [ package_name, package_version ]
         converted_package_array.append(y)
     return(converted_package_array)
-    
+
+# EXPERIMENTAL CODE TO RETRIEVE LIST OF FILES IN A... FILE AS OPPOSED TO SSH
+
+def ubuntu_get_all_installed_packages_new(ssh):
+    # zssh/xenial 1.5c.debian.1-3.2 amd64
+    package_array = []
+    converted_package_array = []
+    stdin, stdout, stderr = ssh.exec_command('sudo apt list > /tmp/pkglist')
+    exit_status = stdout.channel.recv_exit_status()
+    sftp = ssh.open_sftp()
+    sftp.get('/tmp/pkglist', '/tmp/pkglist_test')
+    sftp.close()
+    #for line in remote_packagelist_file:
+    packagefile = open('/tmp/pkglist_test')
+    packagelist = packagefile.readlines()[1:]
+    for line in packagelist:
+        package_name_temp = re.search(r'^(.+?)/', line)
+        package_name = package_name_temp.group(1)
+        package_version_temp = re.search(r' (.+?) ', line)
+        package_version = package_version_temp.group(1)
+        y = [ package_name, package_version ]
+        converted_package_array.append(y)
+    return(converted_package_array)
+
+# END EXPERIMENTAL CODE
     
 def ubuntu_hold_packages(ssh, packagelist):
     
