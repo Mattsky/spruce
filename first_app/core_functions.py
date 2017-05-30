@@ -180,13 +180,14 @@ def hold_packages(host_id, packages_to_hold, TEST_ADDR, TEST_USER, keyfile):
 
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     host_address = Hosts.objects.only('hostname').get(hostname=host_id)
+    print(host_address)
     ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
         for x in packages_to_hold:
             print(x)
             ubuntu_hold_packages(ssh, x)
-        HeldPackageList.objects.filter(host_name=host_address).delete()
+        HeldPackageList.objects.filter(host_name=host_address).filter(package=x).delete()
         ubuntu_held_packages = ubuntu_get_held_packages(ssh)
         for x in ubuntu_held_packages:
             print(x)

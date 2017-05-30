@@ -28,14 +28,23 @@ def ubuntu_get_package_updates(ssh):
 def ubuntu_get_held_packages(ssh):
     held_packages = []
     package_info = []
-    #stdin, stdout, stderr = ssh.exec_command('sudo apt-mark showhold')
-    stdin, stdout, stderr = ssh.exec_command('sudo dpkg -l | grep "^hi"')
+    stdin, stdout, stderr = ssh.exec_command('sudo apt-mark showhold')
+    #stdin, stdout, stderr = ssh.exec_command('sudo dpkg -l | grep "^hi"')
     held_packages = stdout.readlines()
     for x in held_packages:
         x = x.rstrip('\n')
-        package_name = str.split(x)[1]
-        package_ver = str.split(x)[2]
-        package_info.append([package_name, package_ver])
+        stdin, stdout, stderr = ssh.exec_command('sudo apt list ' + x )
+        heldpackageinfo = stdout.readlines()
+        print("WHOLE THING: "+str(heldpackageinfo))
+        #Get rid of 'Listing...' entry
+        heldpackageinfo = heldpackageinfo[1:]
+        for z in heldpackageinfo:
+            print("HELD PACKAGE: "+ z )
+            package_name = str.split(z)[0]
+            print(package_name)
+            package_ver = str.split(z)[1]
+            print(package_ver)
+            package_info.append([package_name, package_ver])
     return(package_info)
 
 def ubuntu_get_all_installed_packages(ssh):
