@@ -10,11 +10,11 @@ import paramiko
 
 
 #TEST_ADDR = '192.168.0.22'
-TEST_DB_HOST = '172.19.8.70'
+TEST_DB_HOST = '192.168.0.22'
 TEST_USER = 'matt'
 TEST_PASS = 'password'
 TEST_DB = 'testdb'
-KEYFILE = '/Users/matt/.ssh/id_rsa'
+KEYFILE = '/home/matt/.ssh/id_rsa'
 
 # Create your views here.
 

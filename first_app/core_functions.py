@@ -187,7 +187,7 @@ def hold_packages(host_id, packages_to_hold, TEST_ADDR, TEST_USER, keyfile):
         for x in packages_to_hold:
             print(x)
             ubuntu_hold_packages(ssh, x)
-        HeldPackageList.objects.filter(host_name=host_address).filter(package=x).delete()
+        HeldPackageList.objects.filter(host_name=host_address).delete()
         ubuntu_held_packages = ubuntu_get_held_packages(ssh)
         for x in ubuntu_held_packages:
             print(x)
@@ -199,7 +199,7 @@ def hold_packages(host_id, packages_to_hold, TEST_ADDR, TEST_USER, keyfile):
         for x in packages_to_hold:
             print(x)
             centos7_lock_packages(ssh, x)
-        HeldPackageList.objects.filter(host_name=host_address).filter(package=x).delete()
+        HeldPackageList.objects.filter(host_name=host_address).delete()
         centos_held_packages = centos7_get_locked_packages(ssh)
         for x in centos_held_packages:
             print(x)
