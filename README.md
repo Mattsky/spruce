@@ -18,7 +18,12 @@ This project attempts to solve patch management issues for sysadmins and others 
 ## Installation
 
 Clone this repo to a directory, then run the following from the directory *using python 3*:
-python manage.py runserver 0.0.0.0:8000
+
+`python manage.py runserver 0.0.0.0:8000`
+
+Access the scanning page at <webserver address>/first_app/scan .
+
+Access the inventory page at <webserver address>/first_app .
 
 ## Contributors
 
