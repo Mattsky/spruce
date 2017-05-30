@@ -78,24 +78,33 @@ def rescan(scan_address, TEST_USER, keyfile):
             
     if 'CentOS' in os_id[0]:
         centos_installed_packages = centos7_get_all_installed_packages(ssh)
+        centos_converted_package_list = []
         for x in centos_installed_packages:
-            print(x)
-            installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[2])
-            installed_package_entry.save()
+            #print(x)
+            #installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[2])
+            #installed_package_entry.save()
+            centos_converted_package_list.append(InstalledPackageList(host_name=host_address, package=x[0], currentver=x[2]))
+        InstalledPackageList.objects.bulk_create(centos_converted_package_list)
         centos_held_packages = centos7_get_locked_packages(ssh)
+        centos_converted_held_packages = []
         for x in centos_held_packages:
-            print(x)
-            held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
-            held_package_entry.save()
+            #print(x)
+            #held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
+            #held_package_entry.save()
+            centos_converted_held_packages.append(HeldPackageList(host_name=host_address,package=x[0],currentver=x[1]))
+        HeldPackageList.objects.bulk_create(centos_converted_held_packages)
         centos_update_packages = centos7_get_package_updates(ssh)
+        centos_converted_update_list = []
         for x in centos_update_packages:
-            print(x)
+            #print(x)
             for z in centos_installed_packages:
-                print(z)
+                #print(z)
                 if x[0] in z:
                     current_package_version = z[2]
-            update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=current_package_version,newver=x[2])
-            update_package_entry.save()
+            centos_converted_update_list.append(UpdateablePackageList(host_name=host_address,package=x[0],currentver=current_package_version,newver=x[2]))
+        UpdateablePackageList.objects.bulk_create(centos_converted_update_list)    
+            #update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=current_package_version,newver=x[2])
+            #update_package_entry.save()
 
     if 'Ubuntu' in os_id[0]:
         ubuntu_installed_packages = ubuntu_get_all_installed_packages_new(ssh)
@@ -111,15 +120,21 @@ def rescan(scan_address, TEST_USER, keyfile):
         InstalledPackageList.objects.bulk_create(ubuntu_converted_package_list)
             # END BULK CREATE CODE
         ubuntu_held_packages = ubuntu_get_held_packages(ssh)
+        ubuntu_converted_held_packages = []
         for x in ubuntu_held_packages:
-            print(x)
-            held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
-            held_package_entry.save()
+            #print(x)
+            #held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
+            #held_package_entry.save()
+            ubuntu_converted_held_packages.append(HeldPackageList(host_name=host_address,package=x[0],currentver=x[1]))
+        HeldPackageList.objects.bulk_create(ubuntu_converted_held_packages)
         ubuntu_update_packages = ubuntu_get_package_updates(ssh)
+        ubuntu_converted_updates_list = []
         for x in ubuntu_update_packages:
-            print(x)
-            update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2])
-            update_package_entry.save()
+            #print(x)
+            #update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2])
+            #update_package_entry.save()
+            ubuntu_converted_updates_list.append(UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2]))
+        UpdateablePackageList.objects.bulk_create(ubuntu_converted_updates_list)
 
 def unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER, keyfile):
     ssh = paramiko.SSHClient()
