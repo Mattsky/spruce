@@ -108,7 +108,7 @@ def rescan(scan_address, TEST_USER, keyfile):
             print(x)
             held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
             held_package_entry.save()
-        ubuntu_update_packages = centos7_get_package_updates(ssh)
+        ubuntu_update_packages = ubuntu_get_package_updates(ssh)
         for x in ubuntu_update_packages:
             print(x)
             update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2])
