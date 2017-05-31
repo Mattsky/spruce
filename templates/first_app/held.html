@@ -7,8 +7,9 @@
 		<link rel="stylesheet" href="{% static "css/mystyle.css" %}"/>
 	</head>
 	<body>
-		{% if heldpackages %}
+		
 		<h1>System Locked Packages</h1>
+		{% if heldpackages %}
 		<h2>Here are the version locked packages on {{ request.GET.hostname }}: </h2>
 
 		<div class="djangtwo">
@@ -35,7 +36,7 @@
 		</div>
 		
 		{% else %}
-		<p>Nothing found!</p>
+		<h2>No packages are locked on {{ request.GET.hostname }}.</h2>
 		
 		{% endif %}
 

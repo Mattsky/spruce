@@ -9,6 +9,11 @@
 	</head>
 	<body>
 		<h1>System Index</h1>
+		{% if messages %}
+		{% for message in messages %}
+			{{ message }}
+		{% endfor %}
+		{% endif %}
 		<h2>List of scanned systems:</h2>
 
 		<div class="djangtwo">
@@ -22,9 +27,9 @@
 					<tr>
 						<td>{{ sysaddr.1 }}</td>
 						<td>{{ sysaddr.0 }}</td>
-						<td><a href="updates?hostname={{ sysaddr.0 }}">View</a></td>
-						<td><a href="held?hostname={{ sysaddr.0 }}">View</a></td>
-						<td><a href="installed?hostname={{ sysaddr.0 }}">View</a></td>
+						<td><a href="updates?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}">View</a></td>
+						<td><a href="held?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}">View</a></td>
+						<td><a href="installed?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}">View</a></td>
 						<td><input name="address" value="{{ sysaddr.0 }}" type="submit"></td>
 						<td><input name="delete" value="{{ sysaddr.0 }}" type="submit"></td>
 					</tr>	

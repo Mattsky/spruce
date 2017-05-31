@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 import os
 from django.http import HttpResponse
 from first_app.models import UpdateablePackageList, InstalledPackageList, HeldPackageList, Hosts, HostInfo
@@ -54,57 +54,83 @@ def index(request):
 	return render(request,'first_app/index.html',context=host_list)
 
 def held(request):
-	syshost = request.GET['hostname']
-	# Get matching host ID from Hosts model for further ops	
-	host_id = Hosts.objects.only('id').get(hostaddr=syshost)
-	heldpackages = HeldPackageList.objects.filter(host_addr=host_id)
-	packageList = {'heldpackages': heldpackages}
 	
-	if request.method == 'POST':
-		packages_to_unhold = request.POST.getlist('package')
-		TEST_ADDR = syshost
-		
-		unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER, KEYFILE)
+	try:
 
-	return render(request,'first_app/held.html',context=packageList)
+		syshost = request.GET['hostaddr']
+		# Get matching host ID from Hosts model for further ops	
+		host_id = Hosts.objects.only('id').get(hostaddr=syshost)
+		heldpackages = HeldPackageList.objects.filter(host_addr=host_id)
+		packageList = {'heldpackages': heldpackages}
+		
+		if request.method == 'POST':
+			packages_to_unhold = request.POST.getlist('package')
+			TEST_ADDR = syshost
+			
+			unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER, KEYFILE)
+
+		return render(request,'first_app/held.html',context=packageList)
+
+	except Hosts.DoesNotExist:
+
+		messages.error(request, 'That host does not exist (did you try changing the URL manually?)')
+		return redirect('index')
+
 
 def updates(request):
-	syshost = request.GET['hostname']
-	# Get matching host ID from Hosts model for further ops
-	host_id = Hosts.objects.only('id').get(hostaddr=syshost)
-	availableupdates = UpdateablePackageList.objects.filter(host_addr=host_id)
-	updateList = {'availableupdates': availableupdates}
 
-	if request.method == 'POST':
-		packages_to_update = request.POST.getlist('package')
-		TEST_ADDR = syshost
-		
-		update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER, KEYFILE)
+	try:
 
-	return render(request,'first_app/updates.html',context=updateList)
+		syshost = request.GET['hostaddr']
+		# Get matching host ID from Hosts model for further ops
+		host_id = Hosts.objects.only('id').get(hostaddr=syshost)
+		availableupdates = UpdateablePackageList.objects.filter(host_addr=host_id)
+		updateList = {'availableupdates': availableupdates}
+
+		if request.method == 'POST':
+			packages_to_update = request.POST.getlist('package')
+			TEST_ADDR = syshost
+			
+			update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER, KEYFILE)
+
+		return render(request,'first_app/updates.html',context=updateList)
+
+	except Hosts.DoesNotExist:
+
+		messages.error(request, 'That host does not exist (did you try changing the URL manually?)')
+		return redirect('index')
 
 def installed(request):
-	syshost = request.GET['hostname']
-	# Get matching host ID from Hosts model for further ops
-	host_id = Hosts.objects.only('id').get(hostaddr=syshost)
-	installedpackages = InstalledPackageList.objects.filter(host_addr=host_id)
-	packageList = {'installedpackages': installedpackages}
 
-	if request.method == 'POST':
-		packages_to_lock = request.POST.getlist('package')
-		TEST_ADDR = syshost
-		for x in packages_to_lock:
-			print(x)
-		hold_packages(host_id, packages_to_lock, TEST_ADDR, TEST_USER, KEYFILE)
-		#TEST_ADDR = syshost
-		
-		#unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER)
+	try:
 
-	return render(request,'first_app/installed.html',context=packageList)
+		syshost = request.GET['hostaddr']
+		# Get matching host ID from Hosts model for further ops
+		host_id = Hosts.objects.only('id').get(hostaddr=syshost)
+		installedpackages = InstalledPackageList.objects.filter(host_addr=host_id)
+		packageList = {'installedpackages': installedpackages}
+
+		if request.method == 'POST':
+			packages_to_lock = request.POST.getlist('package')
+			TEST_ADDR = syshost
+			for x in packages_to_lock:
+				print(x)
+			hold_packages(host_id, packages_to_lock, TEST_ADDR, TEST_USER, KEYFILE)
+			#TEST_ADDR = syshost
+			
+			#unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER)
+
+		return render(request,'first_app/installed.html',context=packageList)
+
+	except Hosts.DoesNotExist:
+
+		messages.error(request, 'That host does not exist (did you try changing the URL manually?)')
+		return redirect('index')
 
 def scan(request):
 
 	try:
+		
 		if request.method == "POST":
 		
 			scan_address = request.POST['address']

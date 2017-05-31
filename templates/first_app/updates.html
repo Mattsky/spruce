@@ -8,10 +8,11 @@
 	</head>
 	<body>
 		<h1>System Updates</h1>
+		{% if availableupdates %}
 		<h2>Here are the available updates on {{ request.GET.hostname }}:</h2>
 
 		<div class="djangtwo">
-			{% if availableupdates %}
+			
 			<form method="POST">
 			<table>
 				<thead>
@@ -33,7 +34,7 @@
 				<input type="submit" class="btn btn-primary" value="Submit">
 			</form>
 			{% else %}
-			<p>No package updates found!</p>
+			<h2>No updates are currently available on {{ request.GET.hostname }}.</h2>
 			{% endif %}
 
 		</div>
