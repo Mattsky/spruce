@@ -1,5 +1,14 @@
-import re, time
-from first_app.core_functions import *
+import re, time, datetime
+from django.conf import settings
+from django.core.files import File
+
+def get_hostname(ssh):
+    try:
+        stdin, stdout, stderr = ssh.exec_command('hostname')
+        sys_hostname = stdout.read()
+        return(sys_hostname)
+    except:
+        print("ERROR")
 
 def centos7_get_package_updates(ssh):
     package_updates = []
@@ -117,21 +126,55 @@ def centos7_unlock_packages(ssh, packagelist):
 def centos7_update_packages(ssh, packagelist):
     
     try:
+        print("PACKAGELIST TYPE: ")
         print(type(packagelist))
+        print("PACKAGELIST: ")
+        print(packagelist)
+        log_dir = settings.LOG_DIR
         package_list_string = ""
         host_name = get_hostname(ssh)
         #Strip whitespace from end of hostname
         host_name = host_name.rstrip()
+        # Convert hostname from bytes to usable string
+        host_name = host_name.decode("utf-8")
+        print(host_name)
         # isinstance list check may need changing to tuple when results pulled from DB
         if isinstance(packagelist, list):
             for x in packagelist:
                 package_list_string = package_list_string + x + ' '
             stdin, stdout, stderr = ssh.exec_command('sudo yum -y update ' + package_list_string)
             exit_status = stdout.channel.recv_exit_status()
+            print("sudo yum -y update "+package_list_string)
+
+            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
+            print(log_dir)
+            print(host_name)
+            print(timestamp)
+            logfile_full = log_dir+'/'+host_name+'-'+timestamp
+            print(logfile_full)
+            logfile = open(logfile_full, 'w')
+            logfile.write("The below packages were updated:\n")
+            for item in packagelist:
+                logfile.write("%s\n" % item)
+            logfile.close()
+
         elif isinstance(packagelist, str):
             stdin, stdout, stderr = ssh.exec_command('sudo yum -y update ' + packagelist)
             exit_status = stdout.channel.recv_exit_status()
+
+            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
+            print(log_dir)
+            print(type(host_name))
+            print(str(host_name))
+            print(timestamp)
+            logfile_full = log_dir+'/'+host_name+'-'+timestamp
+            print(logfile_full)
+            logfile = open(logfile_full, 'w')
+            logfile.write("The below package was updated:\n")
+            logfile.write("%s\n" % packagelist)
+            logfile.close()
+            
   
         return("SUCCESS")
     except:
-        return("FAILURE")
+        print("FAILURE")

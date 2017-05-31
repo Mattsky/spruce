@@ -1,4 +1,14 @@
-import re, time
+import re, time, datetime
+from django.conf import settings
+from django.core.files import File
+
+def get_hostname(ssh):
+    try:
+        stdin, stdout, stderr = ssh.exec_command('hostname')
+        sys_hostname = stdout.read()
+        return(sys_hostname)
+    except:
+        print("ERROR")
 
 def ubuntu_get_package_updates(ssh):
     package_updates = []
@@ -124,28 +134,55 @@ def ubuntu_unhold_packages(ssh, packagelist):
 def ubuntu_apply_package_updates(ssh, packagelist):
     
     try:
+        log_dir = settings.LOG_DIR
+        host_name = get_hostname(ssh)
+        #Strip whitespace from end of hostname
+        host_name = host_name.rstrip()
+        # Convert hostname from bytes to usable string
+        host_name = host_name.decode("utf-8")
         print(type(packagelist))
         complete_packagelist = ""
-        if isinstance(packagelist, tuple):
+        final_packagelist = []
+        if isinstance(packagelist, list):
+            print(packagelist)
             for x in packagelist:
                 print(x)
-                print('package name: ' + str(x))
-                # Convert tuple object to string, then strip off leading "('" and trailing "',)"
-                packagename = str(x)
-                packagename = packagename[:-3]
-                packagename = packagename[2:]
+                print('package name: ' + x)
                 # Add space for building total package list ("packagename " - "package1package2" will break it)
-                print('new package name: ' + packagename)
-                complete_packagelist = complete_packagelist + (packagename + ' ')
+                complete_packagelist = complete_packagelist + (x + ' ')
             print("Installing: " + complete_packagelist)
             stdin, stdout, stderr = ssh.exec_command('sudo apt-get -y install --only-upgrade ' + complete_packagelist)
             stdout = stdout.readlines()
-            for line in stdout:
-                print(line)
+            #for line in stdout:
+                #print(line)
+            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
+            print(log_dir)
+            print(host_name)
+            print(timestamp)
+            logfile_full = log_dir+'/'+host_name+'-'+timestamp
+            print(logfile_full)
+            logfile = open(logfile_full, 'w')
+            logfile.write("The below packages were updated:\n")
+            for item in packagelist:
+                logfile.write("%s\n" % item)
+            logfile.close()
             
 
         elif isinstance(packagelist, str):
             stdin, stdout, stderr = ssh.exec_command('sudo apt-get -y install --only-upgrade ' + x)
+            exit_status = stdout.channel.recv_exit_status()
+
+            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
+            print(log_dir)
+            print(type(host_name))
+            print(str(host_name))
+            print(timestamp)
+            logfile_full = log_dir+'/'+host_name+'-'+timestamp
+            print(logfile_full)
+            logfile = open(logfile_full, 'w')
+            logfile.write("The below package was updated:\n")
+            logfile.write("%s\n" % packagelist)
+            logfile.close()
     
 
         print("SUCCESS")

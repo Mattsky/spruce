@@ -51,7 +51,7 @@ def get_hostname(ssh):
         sys_hostname = stdout.read()
         return(sys_hostname)
     except:
-        return("ERROR")
+        print("ERROR")
 
 def rescan(scan_address, TEST_USER, keyfile):
 
@@ -177,31 +177,28 @@ def update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER, keyfile):
     ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
-        for x in packages_to_update:
-            print(x)
-            ubuntu_apply_package_updates(ssh, x)
+        ubuntu_apply_package_updates(ssh, packages_to_update)
             #UpdateablePackageList.objects.filter(host_name=host_id).filter(package=x).delete()
         held_packages = ubuntu_get_held_packages(ssh)
         UpdateablePackageList.objects.filter(host_addr=host_id).delete()
         #ubuntu_create_host_held_package_table(TEST_DB_HOST, TEST_DB, TEST_USER, TEST_PASS, syshost, held_packages)
-        ubuntu_update_packages = centos7_get_package_updates(ssh)
+        ubuntu_update_packages = ubuntu_get_package_updates(ssh)
         for x in ubuntu_update_packages:
-            print(x)
+            #print(x)
             update_package_entry = UpdateablePackageList(host_addr=host_address,package=x[0],currentver=x[1],newver=x[2])
             update_package_entry.save()
 
     if 'CentOS' in os_id[0]:
-        for x in packages_to_update:
-            print(x)
-            centos7_update_packages(ssh, x)
+        #print(type(packages_to_update))
+        centos7_update_packages(ssh, packages_to_update)
             #UpdateablePackageList.objects.filter(host_name=host_id).filter(package=x).delete()
         held_packages = centos7_get_locked_packages(ssh)
         UpdateablePackageList.objects.filter(host_addr=host_id).delete()
         centos_update_packages = centos7_get_package_updates(ssh)
         for x in centos_update_packages:
-            print(x)
+            #print(x)
             for z in centos_update_packages:
-                print(z)
+                #print(z)
                 if x[0] in z:
                     current_package_version = z[2]
             update_package_entry = UpdateablePackageList(host_addr=host_address,package=x[0],currentver=current_package_version,newver=x[2])
