@@ -1,4 +1,5 @@
 import re, time
+from first_app.core_functions import *
 
 def centos7_get_package_updates(ssh):
     package_updates = []
@@ -118,6 +119,9 @@ def centos7_update_packages(ssh, packagelist):
     try:
         print(type(packagelist))
         package_list_string = ""
+        host_name = get_hostname(ssh)
+        #Strip whitespace from end of hostname
+        host_name = host_name.rstrip()
         # isinstance list check may need changing to tuple when results pulled from DB
         if isinstance(packagelist, list):
             for x in packagelist:

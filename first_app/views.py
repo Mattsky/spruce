@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.conf import settings
 import os
 from django.http import HttpResponse
 from first_app.models import UpdateablePackageList, InstalledPackageList, HeldPackageList, Hosts, HostInfo
@@ -13,7 +14,8 @@ import paramiko
 
 #TEST_ADDR = '192.168.0.22'
 #TEST_DB_HOST = '172.19.8.70' #OSX lab server
-TEST_DB_HOST = '192.168.0.22' #Home lab DB server
+#TEST_DB_HOST = '192.168.0.22' #Home lab DB server
+TEST_DB_HOST = settings.DATABASES['default']['HOST']
 TEST_USER = 'matt'
 TEST_PASS = 'password'
 TEST_DB = 'testdb'
@@ -130,7 +132,7 @@ def installed(request):
 def scan(request):
 
 	try:
-		
+
 		if request.method == "POST":
 		
 			scan_address = request.POST['address']

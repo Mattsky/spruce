@@ -1,7 +1,6 @@
 from first_app.models import UpdateablePackageList, InstalledPackageList, HeldPackageList, Hosts, HostInfo
 from django.db import connection, transaction
 from first_app.ubuntu_functions import *
-from first_app.core_functions import *
 from first_app.sql_functions import *
 from first_app.centos7_functions import *
 import paramiko
