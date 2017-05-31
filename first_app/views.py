@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import os
 from django.http import HttpResponse
 from first_app.models import UpdateablePackageList, InstalledPackageList, HeldPackageList, Hosts, HostInfo
 from django.db import connection
@@ -10,11 +11,13 @@ import paramiko
 
 
 #TEST_ADDR = '192.168.0.22'
-TEST_DB_HOST = '192.168.0.22'
+TEST_DB_HOST = '172.19.8.70' #OSX lab server
+#TEST_DB_HOST = '192.168.0.22' #Home lab DB server
 TEST_USER = 'matt'
 TEST_PASS = 'password'
 TEST_DB = 'testdb'
-KEYFILE = '/home/matt/.ssh/id_rsa'
+HOMEDIR = os.path.expanduser('~')
+KEYFILE = HOMEDIR + '/.ssh/id_rsa'
 
 # Create your views here.
 
