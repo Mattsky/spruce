@@ -24,21 +24,17 @@ KEYFILE = HOMEDIR + '/.ssh/id_rsa'
 
 def index(request):
 	
-	list_of_hosts = Hosts.objects.values_list('hostname', flat=True)
-	print("TYPE: "+ str(type(list_of_hosts)))
+	list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
+	
 	#host_list = {'hosts':list_of_hosts}
 	new_host_list = []
-	
+	print(list_of_hosts)
 
 	#print(list_of_hosts)
 	for x in list_of_hosts:
-		print(x)
-		host_id = Hosts.objects.only('id').get(hostname=x)
-		hostname = HostInfo.objects.only('host_address').get(host_name=host_id)
-		print(hostname)
-		new_host_list.append([x, str(hostname)]) 
-
-
+		host_id = Hosts.objects.only('id').get(hostaddr=x)
+		host_name = HostInfo.objects.only('host_name').get(host_addr_id=host_id)
+		new_host_list.append([x, str(host_name)]) 
 
 	host_list = {'hosts':new_host_list}	
 
@@ -60,8 +56,8 @@ def index(request):
 def held(request):
 	syshost = request.GET['hostname']
 	# Get matching host ID from Hosts model for further ops	
-	host_id = Hosts.objects.only('id').get(hostname=syshost)
-	heldpackages = HeldPackageList.objects.filter(host_name=host_id)
+	host_id = Hosts.objects.only('id').get(hostaddr=syshost)
+	heldpackages = HeldPackageList.objects.filter(host_addr=host_id)
 	packageList = {'heldpackages': heldpackages}
 	
 	if request.method == 'POST':
@@ -75,8 +71,8 @@ def held(request):
 def updates(request):
 	syshost = request.GET['hostname']
 	# Get matching host ID from Hosts model for further ops
-	host_id = Hosts.objects.only('id').get(hostname=syshost)
-	availableupdates = UpdateablePackageList.objects.filter(host_name=host_id)
+	host_id = Hosts.objects.only('id').get(hostaddr=syshost)
+	availableupdates = UpdateablePackageList.objects.filter(host_addr=host_id)
 	updateList = {'availableupdates': availableupdates}
 
 	if request.method == 'POST':
@@ -90,8 +86,8 @@ def updates(request):
 def installed(request):
 	syshost = request.GET['hostname']
 	# Get matching host ID from Hosts model for further ops
-	host_id = Hosts.objects.only('id').get(hostname=syshost)
-	installedpackages = InstalledPackageList.objects.filter(host_name=host_id)
+	host_id = Hosts.objects.only('id').get(hostaddr=syshost)
+	installedpackages = InstalledPackageList.objects.filter(host_addr=host_id)
 	packageList = {'installedpackages': installedpackages}
 
 	if request.method == 'POST':
