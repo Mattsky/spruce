@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'first_app',
-    'app_two',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +81,7 @@ DATABASES = {
         'NAME': 'testdb',
         'USER': 'matt',
         'PASSWORD': 'password',
-        'HOST': '172.19.8.70',
+        'HOST': '192.168.0.22',
         'PORT': '3306', 
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'", 
