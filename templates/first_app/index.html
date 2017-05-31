@@ -4,28 +4,29 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Django Level 2</title>
+		<title>Patch Manger Project - Main Page</title>
 		<link rel="stylesheet" href="{% static "css/mystyle.css" %}"/>
 	</head>
 	<body>
-		<h1>Hi welcome to Django level 2!</h1>
-		<h2>Here are your access records:</h2>
+		<h1>System Index</h1>
+		<h2>List of scanned systems:</h2>
 
 		<div class="djangtwo">
 			{% if hosts %}
 			<form method="POST">
 				<table>
 					<thead>
-						<th>Host Name / IP Address</th><th>Software Updates</th><th>Locked Packages</th><th>All Installed Packages</th><th>Rescan?</th><th><p style="color:red">DELETE?</p></th>
+						<th>Host Name</th><th>IP Address</th><th>Software Updates</th><th>Locked Packages</th><th>All Installed Packages</th><th>Rescan?</th><th><p style="color:red">DELETE?</p></th>
 					</thead>
 					{% for sysaddr in hosts %}
 					<tr>
-						<td>{{ sysaddr }}</td>
-						<td><a href="updates?hostname={{ sysaddr }}">View</a></td>
-						<td><a href="held?hostname={{ sysaddr }}">View</a></td>
-						<td><a href="installed?hostname={{ sysaddr }}">View</a></td>
-						<td><input name="address" value="{{ sysaddr }}" type="submit"></td>
-						<td><input name="delete" value="{{ sysaddr }}" type="submit"></td>
+						<td>{{ sysaddr.1 }}</td>
+						<td>{{ sysaddr.0 }}</td>
+						<td><a href="updates?hostname={{ sysaddr.0 }}">View</a></td>
+						<td><a href="held?hostname={{ sysaddr.0 }}">View</a></td>
+						<td><a href="installed?hostname={{ sysaddr.0 }}">View</a></td>
+						<td><input name="address" value="{{ sysaddr.0 }}" type="submit"></td>
+						<td><input name="delete" value="{{ sysaddr.0 }}" type="submit"></td>
 					</tr>	
 					{% endfor %}
 				</table>

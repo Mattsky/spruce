@@ -3,11 +3,11 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Django Level 2</title>
+		<title>{{ request.GET.hostname }}: All Installed</title>
 		<link rel="stylesheet" href="{% static "css/mystyle.css" %}"/>
 	</head>
 	<body>
-		<h1>Hi welcome to Django level 2!</h1>
+		<h1>System Installed Packages</h1>
 		<h2>Here are the installed packages on {{ request.GET.hostname }}:</h2>
 
 		<div class="djangtwo">

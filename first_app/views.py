@@ -25,7 +25,22 @@ KEYFILE = HOMEDIR + '/.ssh/id_rsa'
 def index(request):
 	
 	list_of_hosts = Hosts.objects.values_list('hostname', flat=True)
-	host_list = {'hosts':list_of_hosts}
+	print("TYPE: "+ str(type(list_of_hosts)))
+	#host_list = {'hosts':list_of_hosts}
+	new_host_list = []
+	
+
+	#print(list_of_hosts)
+	for x in list_of_hosts:
+		print(x)
+		host_id = Hosts.objects.only('id').get(hostname=x)
+		hostname = HostInfo.objects.only('host_address').get(host_name=host_id)
+		print(hostname)
+		new_host_list.append([x, str(hostname)]) 
+
+
+
+	host_list = {'hosts':new_host_list}	
 
 	if request.method == "POST":
 		if 'address' in request.POST.keys() and request.POST['address']:
@@ -41,10 +56,6 @@ def index(request):
 			return render(request, 'first_app/index.html', context=host_list)
 
 	return render(request,'first_app/index.html',context=host_list)
-
-	#webpages_list = AccessRecord.objects.order_by('date')
-	#date_dict = {'access_records':webpages_list}
-	#return render(request,'first_app/index.html',context=date_dict)
 
 def held(request):
 	syshost = request.GET['hostname']

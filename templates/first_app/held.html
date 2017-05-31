@@ -3,13 +3,13 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Django Level 2</title>
+		<title>{{ request.GET.hostname }}: Locked Packages</title>
 		<link rel="stylesheet" href="{% static "css/mystyle.css" %}"/>
 	</head>
 	<body>
 		{% if heldpackages %}
-		<h1>Hi welcome to Django level 2!</h1>
-		<h2>Here are the held packages on {{ request.GET.hostname }}: </h2>
+		<h1>System Locked Packages</h1>
+		<h2>Here are the version locked packages on {{ request.GET.hostname }}: </h2>
 
 		<div class="djangtwo">
 			<form method="POST">
