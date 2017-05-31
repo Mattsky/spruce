@@ -10,6 +10,13 @@
 	<body>
 		<h1>Hi welcome to Django level 2!</h1>
 		<h2>SCAN PAGE.</h2>
+		{% if messages %}
+		<div>
+		{% for message in messages %}
+			{{ message }}
+		{% endfor %}
+		</div>
+		{% endif %}
 
 		<div class="djangtwo">
 			<form method="POST">

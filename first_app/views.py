@@ -3,6 +3,7 @@ import os
 from django.http import HttpResponse
 from first_app.models import UpdateablePackageList, InstalledPackageList, HeldPackageList, Hosts, HostInfo
 from django.db import connection
+from django.contrib import messages
 from first_app.ubuntu_functions import *
 from first_app.core_functions import *
 from first_app.sql_functions import *
@@ -105,10 +106,12 @@ def scan(request):
 			rescan(scan_address, TEST_USER, KEYFILE)
 			return render(request, 'first_app/scan.html')
 
-
+		messages.success(request, 'Scan successful - details added.')
 		return render(request,'first_app/scan.html')
 
 	except OSError as e:
+		messages.error(request, 'The remote system could not be contacted.')
 		return render(request,'first_app/scan.html')
 	except NoValidConnectionsError as e:
+		messages.error(request, e)
 		return render(request,'first_app/scan.html')

@@ -61,22 +61,22 @@ def rescan(scan_address, TEST_USER, keyfile):
 
     # Delete existing info prior to refresh and recreate, just in case
     Hosts.objects.filter(hostname=scan_address).delete()
-    host_entry = Hosts(hostname=scan_address)
-    host_entry.save()
+    
 
     ssh.connect(scan_address, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     print(os_id)
-    
-    host_address = Hosts.objects.only('hostname').get(hostname=scan_address)
-    #FIX THIS BIT - REARRANGE MODELS AS REQUIRED!
-    host_name = get_hostname(ssh)
-    #Strip whitespace from end of hostname
-    host_name = host_name.rstrip()
-    host_info_entry = HostInfo(host_name=host_address, host_address=host_name, os_name=os_id[0], os_version=os_id[1])
-    host_info_entry.save()
             
     if 'CentOS' in os_id[0]:
+        host_entry = Hosts(hostname=scan_address)
+        host_entry.save()
+        host_address = Hosts.objects.only('hostname').get(hostname=scan_address)
+        #FIX THIS BIT - REARRANGE MODELS AS REQUIRED!
+        host_name = get_hostname(ssh)
+        #Strip whitespace from end of hostname
+        host_name = host_name.rstrip()
+        host_info_entry = HostInfo(host_name=host_address, host_address=host_name, os_name=os_id[0], os_version=os_id[1])
+        host_info_entry.save()
         centos_installed_packages = centos7_get_all_installed_packages(ssh)
         centos_converted_package_list = []
         for x in centos_installed_packages:
@@ -107,6 +107,15 @@ def rescan(scan_address, TEST_USER, keyfile):
             #update_package_entry.save()
 
     if 'Ubuntu' in os_id[0]:
+        host_entry = Hosts(hostname=scan_address)
+        host_entry.save()
+        host_address = Hosts.objects.only('hostname').get(hostname=scan_address)
+        #FIX THIS BIT - REARRANGE MODELS AS REQUIRED!
+        host_name = get_hostname(ssh)
+        #Strip whitespace from end of hostname
+        host_name = host_name.rstrip()
+        host_info_entry = HostInfo(host_name=host_address, host_address=host_name, os_name=os_id[0], os_version=os_id[1])
+        host_info_entry.save()
         ubuntu_installed_packages = ubuntu_get_all_installed_packages_new(ssh)
         ubuntu_converted_package_list = []
         for x in ubuntu_installed_packages:
@@ -135,6 +144,8 @@ def rescan(scan_address, TEST_USER, keyfile):
             #update_package_entry.save()
             ubuntu_converted_updates_list.append(UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2]))
         UpdateablePackageList.objects.bulk_create(ubuntu_converted_updates_list)
+
+ 
 
 def unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER, keyfile):
     ssh = paramiko.SSHClient()
