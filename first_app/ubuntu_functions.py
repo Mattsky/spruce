@@ -1,6 +1,52 @@
 import re, time, datetime
 from django.conf import settings
 from django.core.files import File
+import os
+
+def log_write(packagelist, host_name, action_type):
+    try:
+
+        log_dir = settings.LOG_DIR
+        if isinstance(packagelist, list):
+
+            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
+            print(log_dir)
+            print(host_name)
+            print(timestamp)
+            logfile_target = os.path.join(log_dir,host_name + '_' + action_type + '-' + timestamp + '.txt')
+            print(logfile_target)
+            logfile = open(logfile_target, 'w')
+            if action_type=="update":
+                logfile.write("The below packages were updated:\n")
+            elif action_type=="unhold":
+                logfile.write("The below packages were unlocked:\n")
+            elif action_type=="hold":
+                logfile.write("The below packages were locked:\n")
+            for item in packagelist:
+                logfile.write("%s\n" % item)
+            logfile.close()
+
+        elif isinstance(packagelist, str):
+
+            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
+            print(log_dir)
+            print(type(host_name))
+            print(str(host_name))
+            print(timestamp)
+            logfile_target = os.path.join(log_dir,host_name + '_' + action_type + '-' + timestamp + '.txt')
+            print(logfile_target)
+            logfile = open(logfile_target, 'w')
+            if action_type=="update":
+                logfile.write("The below packages were updated:\n")
+            elif action_type=="unhold":
+                logfile.write("The below packages were unlocked:\n")
+            elif action_type=="hold":
+                logfile.write("The below packages were locked:\n")
+            logfile.write("%s\n" % packagelist)
+            logfile.close()
+    except:
+
+        print("FAILURE WRITING LOGS")
 
 def get_hostname(ssh):
     try:
@@ -57,26 +103,9 @@ def ubuntu_get_held_packages(ssh):
             package_info.append([package_name, package_ver])
     return(package_info)
 
-def ubuntu_get_all_installed_packages(ssh):
-    # zssh/xenial 1.5c.debian.1-3.2 amd64
-    package_array = []
-    converted_package_array = []
-    stdin, stdout, stderr = ssh.exec_command('sudo apt list')
-    package_array = stdout.readlines()
-    # Remove 'listing' entry
-    del package_array[0]
-    for x in package_array:
-        package_name_temp = re.search(r'^(.+?)/', x)
-        package_name = package_name_temp.group(1)
-        package_version_temp = re.search(r' (.+?) ', x)
-        package_version = package_version_temp.group(1)
-        y = [ package_name, package_version ]
-        converted_package_array.append(y)
-    return(converted_package_array)
-
 # EXPERIMENTAL CODE TO RETRIEVE LIST OF FILES IN A... FILE AS OPPOSED TO SSH
 
-def ubuntu_get_all_installed_packages_new(ssh):
+def ubuntu_get_all_installed_packages(ssh):
     # zssh/xenial 1.5c.debian.1-3.2 amd64
     package_array = []
     converted_package_array = []
@@ -102,14 +131,30 @@ def ubuntu_get_all_installed_packages_new(ssh):
 def ubuntu_hold_packages(ssh, packagelist):
     
     try:
-        print(type(packagelist))
+        log_dir = settings.LOG_DIR
+        package_list_string = ""
+        host_name = get_hostname(ssh)
+        #Strip whitespace from end of hostname
+        host_name = host_name.rstrip()
+        # Convert hostname from bytes to usable string
+        host_name = host_name.decode("utf-8")
+        package_list_string = ""
+
         if isinstance(packagelist, list):
             for x in packagelist:
-                stdin, stdout, stderr = ssh.exec_command('sudo apt-mark hold ' + x)
-                exit_status = stdout.channel.recv_exit_status()
+                package_list_string = package_list_string + x + ' '
+            stdin, stdout, stderr = ssh.exec_command('sudo apt-mark hold ' + package_list_string)
+            exit_status = stdout.channel.recv_exit_status()
+
+            action_type = "hold"
+            log_write(packagelist, host_name, action_type)
+
         elif isinstance(packagelist, str):
             stdin, stdout, stderr = ssh.exec_command('sudo apt-mark hold ' + packagelist)
             exit_status = stdout.channel.recv_exit_status()
+
+            action_type = "hold"
+            log_write(packagelist, host_name, action_type)
   
         return("SUCCESS")
     except:
@@ -118,14 +163,34 @@ def ubuntu_hold_packages(ssh, packagelist):
 def ubuntu_unhold_packages(ssh, packagelist):
     
     try:
+        log_dir = settings.LOG_DIR
+        package_list_string = ""
+        host_name = get_hostname(ssh)
+        #Strip whitespace from end of hostname
+        host_name = host_name.rstrip()
+        # Convert hostname from bytes to usable string
+        host_name = host_name.decode("utf-8")
+        package_list_string = ""
         print(type(packagelist))
         if isinstance(packagelist, list):
+            print("UBUNTU UNHOLD LIST")
             for x in packagelist:
-                stdin, stdout, stderr = ssh.exec_command('sudo apt-mark unhold ' + x)
-                exit_status = stdout.channel.recv_exit_status()
+                normal_package_name = x.split('/')[0]
+                package_list_string = package_list_string + normal_package_name + ' '
+            print("PACKAGE LIST: "+package_list_string)
+            stdin, stdout, stderr = ssh.exec_command('sudo apt-mark unhold ' + package_list_string)
+            exit_status = stdout.channel.recv_exit_status()
+
+            action_type = "unhold"
+            log_write(packagelist, host_name, action_type)
+
         elif isinstance(packagelist, str):
+            print("UBUNTU UNHOLD STRING")
             stdin, stdout, stderr = ssh.exec_command('sudo apt-mark unhold ' + packagelist)
             exit_status = stdout.channel.recv_exit_status()
+
+            action_type = "unhold"
+            log_write(packagelist, host_name, action_type)
  
         return("SUCCESS")
     except:
@@ -155,35 +220,18 @@ def ubuntu_apply_package_updates(ssh, packagelist):
             stdout = stdout.readlines()
             #for line in stdout:
                 #print(line)
-            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
-            print(log_dir)
-            print(host_name)
-            print(timestamp)
-            logfile_full = log_dir+'/'+host_name+'-'+timestamp
-            print(logfile_full)
-            logfile = open(logfile_full, 'w')
-            logfile.write("The below packages were updated:\n")
-            for item in packagelist:
-                logfile.write("%s\n" % item)
-            logfile.close()
+            action_type = "update"
+
+            log_write(packagelist, host_name, action_type)
             
 
         elif isinstance(packagelist, str):
             stdin, stdout, stderr = ssh.exec_command('sudo apt-get -y install --only-upgrade ' + x)
             exit_status = stdout.channel.recv_exit_status()
 
-            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
-            print(log_dir)
-            print(type(host_name))
-            print(str(host_name))
-            print(timestamp)
-            logfile_full = log_dir+'/'+host_name+'-'+timestamp
-            print(logfile_full)
-            logfile = open(logfile_full, 'w')
-            logfile.write("The below package was updated:\n")
-            logfile.write("%s\n" % packagelist)
-            logfile.close()
-    
+            action_type = "update"
+
+            log_write(packagelist, host_name, action_type)
 
         print("SUCCESS")
     except:
@@ -221,6 +269,8 @@ def ubuntu_install_specific_version_package(ssh, package, version):
             print(line)
         for line in stderr:
             print(line)
+
+        log_write(package, host_name, action_type)
 
         print("SUCCESS")
     except:

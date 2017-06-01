@@ -3,7 +3,13 @@ from django.db import connection, transaction
 from first_app.ubuntu_functions import *
 from first_app.sql_functions import *
 from first_app.centos7_functions import *
+from django.conf import settings
+from django.core.files import File
 import paramiko
+import re, time, datetime
+
+def test_print9000():
+    print("ROUTINE CALLED")
 
 def os_ident(ssh):
     OS = ''
@@ -115,7 +121,7 @@ def rescan(scan_address, TEST_USER, keyfile):
         host_name = host_name.rstrip()
         host_info_entry = HostInfo(host_addr=host_address, host_name=host_name, os_name=os_id[0], os_version=os_id[1])
         host_info_entry.save()
-        ubuntu_installed_packages = ubuntu_get_all_installed_packages_new(ssh)
+        ubuntu_installed_packages = ubuntu_get_all_installed_packages(ssh)
         ubuntu_converted_package_list = []
         for x in ubuntu_installed_packages:
             # BEGIN ORIGINAL WORKING CODE
@@ -154,17 +160,18 @@ def unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER, keyfile):
     ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
+        
+        ubuntu_unhold_packages(ssh, packages_to_unhold)
         for x in packages_to_unhold:
-            print(x)
-            ubuntu_unhold_packages(ssh, x)
             HeldPackageList.objects.filter(host_addr=host_id).filter(package=x).delete()
         held_packages = ubuntu_get_held_packages(ssh)
         #ubuntu_create_host_held_package_table(TEST_DB_HOST, TEST_DB, TEST_USER, TEST_PASS, syshost, held_packages)
 
     if 'CentOS' in os_id[0]:
+        #for x in packages_to_unhold:
+            #print(x)
+        centos7_unlock_packages(ssh, packages_to_unhold)
         for x in packages_to_unhold:
-            print(x)
-            centos7_unlock_packages(ssh, x)
             HeldPackageList.objects.filter(host_addr=host_id).filter(package=x).delete()
         held_packages = centos7_get_locked_packages(ssh)
 
@@ -213,9 +220,11 @@ def hold_packages(host_id, packages_to_hold, TEST_ADDR, TEST_USER, keyfile):
     ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
-        for x in packages_to_hold:
-            print(x)
-            ubuntu_hold_packages(ssh, x)
+        #for x in packages_to_hold:
+        #    print(x)
+        print("UBUNTU PACKAGES TO HOLD:")
+        print(packages_to_hold)
+        ubuntu_hold_packages(ssh, packages_to_hold)
         HeldPackageList.objects.filter(host_addr=host_address).delete()
         ubuntu_held_packages = ubuntu_get_held_packages(ssh)
         for x in ubuntu_held_packages:
@@ -225,9 +234,10 @@ def hold_packages(host_id, packages_to_hold, TEST_ADDR, TEST_USER, keyfile):
         #ubuntu_create_host_held_package_table(TEST_DB_HOST, TEST_DB, TEST_USER, TEST_PASS, syshost, held_packages)
 
     if 'CentOS' in os_id[0]:
-        for x in packages_to_hold:
-            print(x)
-            centos7_lock_packages(ssh, x)
+        #for x in packages_to_hold:
+            #print(x)
+        print(type(packages_to_hold))
+        centos7_lock_packages(ssh, packages_to_hold)
         HeldPackageList.objects.filter(host_addr=host_address).delete()
         centos_held_packages = centos7_get_locked_packages(ssh)
         for x in centos_held_packages:

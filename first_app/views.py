@@ -30,7 +30,7 @@ def index(request):
 	
 	#host_list = {'hosts':list_of_hosts}
 	new_host_list = []
-	print(list_of_hosts)
+	#print(list_of_hosts)
 
 	#print(list_of_hosts)
 	for x in list_of_hosts:

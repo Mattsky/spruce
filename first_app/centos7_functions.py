@@ -1,6 +1,55 @@
 import re, time, datetime
 from django.conf import settings
 from django.core.files import File
+import os
+
+def log_write(packagelist, host_name, action_type):
+    try:
+
+        log_dir = settings.LOG_DIR
+        if isinstance(packagelist, list):
+
+            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
+            print(log_dir)
+            print(host_name)
+            print(timestamp)
+            
+            logfile_target = os.path.join(log_dir,host_name + '_' + action_type + '-' + timestamp + '.txt')
+            print(logfile_target)
+            logfile = open(logfile_target, 'w')
+            if action_type=="update":
+                logfile.write("The below packages were updated:\n")
+            elif action_type=="unhold":
+                logfile.write("The below packages were unlocked:\n")
+            elif action_type=="hold":
+                logfile.write("The below packages were locked:\n")
+
+            for item in packagelist:
+                print(item)
+                logfile.write("%s\n" % item)
+            logfile.close()
+
+        elif isinstance(packagelist, str):
+
+            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
+            print(log_dir)
+            print(type(host_name))
+            print(str(host_name))
+            print(timestamp)
+            logfile_target = os.path.join(log_dir,host_name + '_' + action_type + '-' + timestamp + '.txt')
+            print(logfile_target)
+            logfile = open(logfile_target, 'w')
+            if action_type=="update":
+                logfile.write("The below packages were updated:\n")
+            elif action_type=="unhold":
+                logfile.write("The below packages were unlocked:\n")
+            elif action_type=="hold":
+                logfile.write("The below packages were locked:\n")
+            logfile.write("%s\n" % packagelist)
+            logfile.close()
+    except:
+
+        print("FAILURE WRITING LOGS")
 
 def get_hostname(ssh):
     try:
@@ -88,49 +137,9 @@ def centos7_get_locked_packages(ssh):
 def centos7_lock_packages(ssh, packagelist):
     
     try:
-        print(type(packagelist))
-        package_list_string = ""
-        # isinstance list check may need changing to tuple when results pulled from DB
-        if isinstance(packagelist, list):
-            for x in packagelist:
-                package_list_string = package_list_string + x + ' '
-            stdin, stdout, stderr = ssh.exec_command('sudo yum versionlock ' + package_list_string)
-            exit_status = stdout.channel.recv_exit_status()
-        elif isinstance(packagelist, str):
-            stdin, stdout, stderr = ssh.exec_command('sudo yum versionlock ' + packagelist)
-            exit_status = stdout.channel.recv_exit_status()
-
-        return("SUCCESS")
-    except:
-        return("FAILURE")
-
-def centos7_unlock_packages(ssh, packagelist):
-    
-    try:
-        print(type(packagelist))
-        package_list_string = ""
-        # isinstance list check may need changing to tuple when results pulled from DB
-        if isinstance(packagelist, list):
-            for x in packagelist:
-                package_list_string = package_list_string + x + ' '
-            stdin, stdout, stderr = ssh.exec_command('sudo yum versionlock delete ' + package_list_string)
-            exit_status = stdout.channel.recv_exit_status()
-        elif isinstance(packagelist, str):
-            stdin, stdout, stderr = ssh.exec_command('sudo yum versionlock delete ' + packagelist)
-            exit_status = stdout.channel.recv_exit_status()
-  
-        return("SUCCESS")
-    except:
-        return("FAILURE")
-
-def centos7_update_packages(ssh, packagelist):
-    
-    try:
-        print("PACKAGELIST TYPE: ")
-        print(type(packagelist))
-        print("PACKAGELIST: ")
-        print(packagelist)
+        print("HELLO")
         log_dir = settings.LOG_DIR
+        print("LOGDIR SET")
         package_list_string = ""
         host_name = get_hostname(ssh)
         #Strip whitespace from end of hostname
@@ -138,42 +147,94 @@ def centos7_update_packages(ssh, packagelist):
         # Convert hostname from bytes to usable string
         host_name = host_name.decode("utf-8")
         print(host_name)
+        print(type(packagelist))
+        package_list_string = ""
+        print(packagelist)
+        #print("LOCK_PACKAGE_FUNCTION_PACKAGELIST: " + type(packagelist))
+        
+        if isinstance(packagelist, list):
+            for x in packagelist:
+                package_list_string = package_list_string + x + ' '
+            stdin, stdout, stderr = ssh.exec_command('sudo yum versionlock ' + package_list_string)
+            exit_status = stdout.channel.recv_exit_status()
+
+            action_type = "hold"
+            log_write(packagelist, host_name, action_type)
+
+        elif isinstance(packagelist, str):
+            stdin, stdout, stderr = ssh.exec_command('sudo yum versionlock ' + packagelist)
+            exit_status = stdout.channel.recv_exit_status()
+
+            action_type = "hold"
+            log_write(packagelist, host_name, action_type)
+
+        return("SUCCESS")
+    except:
+        print("FAILURE TO LOCK")
+
+def centos7_unlock_packages(ssh, packagelist):
+    
+    try:
+
+        log_dir = settings.LOG_DIR
+        package_list_string = ""
+        host_name = get_hostname(ssh)
+        #Strip whitespace from end of hostname
+        host_name = host_name.rstrip()
+        # Convert hostname from bytes to usable string
+        host_name = host_name.decode("utf-8")
+
+        package_list_string = ""
         # isinstance list check may need changing to tuple when results pulled from DB
+        if isinstance(packagelist, list):
+            for x in packagelist:
+                package_list_string = package_list_string + x + ' '
+            stdin, stdout, stderr = ssh.exec_command('sudo yum versionlock delete ' + package_list_string)
+            exit_status = stdout.channel.recv_exit_status()
+      
+            action_type = "unhold"
+            log_write(packagelist, host_name, action_type)
+
+        elif isinstance(packagelist, str):
+            stdin, stdout, stderr = ssh.exec_command('sudo yum versionlock delete ' + packagelist)
+            exit_status = stdout.channel.recv_exit_status()
+    
+            action_type = "unhold"
+            log_write(packagelist, host_name, action_type)
+
+        return("SUCCESS")
+    except:
+        return("FAILURE")
+
+def centos7_update_packages(ssh, packagelist):
+    
+    try:
+        
+        log_dir = settings.LOG_DIR
+        package_list_string = ""
+        host_name = get_hostname(ssh)
+        #Strip whitespace from end of hostname
+        host_name = host_name.rstrip()
+        # Convert hostname from bytes to usable string
+        host_name = host_name.decode("utf-8")
+
         if isinstance(packagelist, list):
             for x in packagelist:
                 package_list_string = package_list_string + x + ' '
             stdin, stdout, stderr = ssh.exec_command('sudo yum -y update ' + package_list_string)
             exit_status = stdout.channel.recv_exit_status()
-            print("sudo yum -y update "+package_list_string)
 
-            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
-            print(log_dir)
-            print(host_name)
-            print(timestamp)
-            logfile_full = log_dir+'/'+host_name+'-'+timestamp
-            print(logfile_full)
-            logfile = open(logfile_full, 'w')
-            logfile.write("The below packages were updated:\n")
-            for item in packagelist:
-                logfile.write("%s\n" % item)
-            logfile.close()
+            action_type = "update"
+            print(action_type)
+            log_write(packagelist, host_name, action_type)
 
         elif isinstance(packagelist, str):
             stdin, stdout, stderr = ssh.exec_command('sudo yum -y update ' + packagelist)
             exit_status = stdout.channel.recv_exit_status()
 
-            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
-            print(log_dir)
-            print(type(host_name))
-            print(str(host_name))
-            print(timestamp)
-            logfile_full = log_dir+'/'+host_name+'-'+timestamp
-            print(logfile_full)
-            logfile = open(logfile_full, 'w')
-            logfile.write("The below package was updated:\n")
-            logfile.write("%s\n" % packagelist)
-            logfile.close()
-            
+            action_type = "update"
+            log_write(packagelist, host_name, action_type)
+
   
         return("SUCCESS")
     except:
