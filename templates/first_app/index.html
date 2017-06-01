@@ -5,33 +5,36 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Patch Manger Project - Main Page</title>
-		<link rel="stylesheet" href="{% static "css/mystyle.css" %}"/>
+		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
 	</head>
 	<body>
-		<h1>System Index</h1>
+	<div class="jumbotron">
+		<h1 class="text-center">System Index</h1>
 		{% if messages %}
 		{% for message in messages %}
 			{{ message }}
 		{% endfor %}
 		{% endif %}
-		<h2>List of scanned systems:</h2>
+	</div>
+		<h2 class="text-center">List of scanned systems:</h2>
+		<p><p>
 
-		<div class="djangtwo">
+		<div class="container">
 			{% if hosts %}
 			<form method="POST">
-				<table>
+				<table class="table table-bordered">
 					<thead>
-						<th>Host Name</th><th>IP Address</th><th>Software Updates</th><th>Locked Packages</th><th>All Installed Packages</th><th>Rescan?</th><th><p style="color:red">DELETE?</p></th>
+						<th><p>Host Name</p></th><th><p>IP Address</p></th><th><p>Software Updates</p></th><th><p>Locked Packages</p></th><th><p>All Installed Packages</p></th><th><p>Rescan?</p></th><th><p class="text-danger">DELETE?</p></th>
 					</thead>
 					{% for sysaddr in hosts %}
 					<tr>
 						<td>{{ sysaddr.1 }}</td>
 						<td>{{ sysaddr.0 }}</td>
-						<td><a href="updates?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}">View</a></td>
-						<td><a href="held?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}">View</a></td>
-						<td><a href="installed?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}">View</a></td>
-						<td><input name="address" value="{{ sysaddr.0 }}" type="submit"></td>
-						<td><input name="delete" value="{{ sysaddr.0 }}" type="submit"></td>
+						<td><a href="updates?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">View</a></td>
+						<td><a href="held?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">View</a></td>
+						<td><a href="installed?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">View</a></td>
+						<td><input name="address" value="{{ sysaddr.0 }}" class="btn btn-warning" type="submit"></td>
+						<td><input name="delete" value="{{ sysaddr.0 }}" class="btn btn-danger" type="submit"></td>
 					</tr>	
 					{% endfor %}
 				</table>

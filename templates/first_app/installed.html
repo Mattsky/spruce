@@ -4,16 +4,19 @@
 	<head>
 		<meta charset="utf-8">
 		<title>{{ request.GET.hostname }}: All Installed</title>
-		<link rel="stylesheet" href="{% static "css/mystyle.css" %}"/>
+		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
 	</head>
 	<body>
-		<h1>System Installed Packages</h1>
-		<h2>Here are the installed packages on {{ request.GET.hostname }}:</h2>
+	<div class="jumbotron">
+		<h1 class="text-center">System Installed Packages</h1>
+	</div>
+		<h2 class="text-center">Here are the installed packages on {{ request.GET.hostname }}:</h2>
+		<p><p>
 
-		<div class="djangtwo">
+		<div class="container">
 			{% if installedpackages %}
 			<form method="POST">
-			<table>
+			<table class="table table-bordered">
 				<thead>
 					<th>Package Name</th>
 					<th>Current Version</th>

@@ -4,17 +4,18 @@
 	<head>
 		<meta charset="utf-8">
 		<title>{{ request.GET.hostname }}: Locked Packages</title>
-		<link rel="stylesheet" href="{% static "css/mystyle.css" %}"/>
+		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
 	</head>
 	<body>
-		
-		<h1>System Locked Packages</h1>
+	<div class="jumbotron">
+		<h1 class="text-center">System Locked Packages</h1>
+	</div>
 		{% if heldpackages %}
-		<h2>Here are the version locked packages on {{ request.GET.hostname }}: </h2>
+		<h2 class="text-center">Here are the version locked packages on {{ request.GET.hostname }}: </h2>
 
-		<div class="djangtwo">
+		<div class="container">
 			<form method="POST">
-			<table>
+			<table class="table table-bordered">
 				<thead>
 					<th>Package Name</th>
 					<th>Locked Version</th>

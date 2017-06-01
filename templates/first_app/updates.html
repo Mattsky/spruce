@@ -4,17 +4,20 @@
 	<head>
 		<meta charset="utf-8">
 		<title>{{ request.GET.hostname }}: Available Updates</title>
-		<link rel="stylesheet" href="{% static "css/mystyle.css" %}"/>
+		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
 	</head>
 	<body>
-		<h1>System Updates</h1>
+	<div class="jumbotron">
+		<h1 class="text-center">System Updates</h1>
+	</div>
 		{% if availableupdates %}
-		<h2>Here are the available updates on {{ request.GET.hostname }}:</h2>
+		<h2 class="text-center">Here are the available updates on {{ request.GET.hostname }}:</h2>
+		<p><p>
 
-		<div class="djangtwo">
+		<div class="container">
 			
 			<form method="POST">
-			<table>
+			<table class="table table-bordered">
 				<thead>
 					<th>Package Name</th>
 					<th>Current Version</th>

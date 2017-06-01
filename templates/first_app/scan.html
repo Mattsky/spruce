@@ -4,12 +4,13 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Django Level 2</title>
-		<link rel="stylesheet" href="{% static "css/mystyle.css" %}"/>
+		<title>Manual Scan</title>
+		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
 	</head>
 	<body>
-		<h1>Hi welcome to Django level 2!</h1>
-		<h2>SCAN PAGE.</h2>
+		<div class="jumbotron">
+		<h1 class="text-center">System Scan - Manual</h1>
+		</div>
 		{% if messages %}
 		<div>
 		{% for message in messages %}
@@ -18,11 +19,11 @@
 		</div>
 		{% endif %}
 
-		<div class="djangtwo">
+		<div class="container">
 			<form method="POST">
 			<p>Please enter the IP address to scan.</p>
 			<input type="text" name="address" required pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$" oninvalid="setCustomValidity('Please enter a valid IPv4 address.')">
-			<input type="submit" value="Submit">
+			<input type="submit" class="btn btn-primary" value="Submit">
 			{% csrf_token %}
 			</form>
 		</div>

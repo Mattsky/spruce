@@ -139,9 +139,10 @@ def scan(request):
             print(scan_address)
 
             rescan(scan_address, TEST_USER, KEYFILE)
+            messages.success(request, 'Scan successful - details added.')
             return render(request, 'first_app/scan.html')
 
-        messages.success(request, 'Scan successful - details added.')
+            
         return render(request,'first_app/scan.html')
 
     except OSError as e:
