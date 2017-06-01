@@ -8,9 +8,6 @@ from django.core.files import File
 import paramiko
 import re, time, datetime
 
-def test_print9000():
-    print("ROUTINE CALLED")
-
 def os_ident(ssh):
     OS = ''
     Version = ''
@@ -73,82 +70,91 @@ def rescan(scan_address, TEST_USER, keyfile):
     print(os_id)
             
     if 'CentOS' in os_id[0]:
-        host_entry = Hosts(hostaddr=scan_address)
-        host_entry.save()
-        host_address = Hosts.objects.only('hostaddr').get(hostaddr=scan_address)
-        #FIX THIS BIT - REARRANGE MODELS AS REQUIRED!
-        host_name = get_hostname(ssh)
-        #Strip whitespace from end of hostname
-        host_name = host_name.rstrip()
-        host_info_entry = HostInfo(host_addr=host_address, host_name=host_name, os_name=os_id[0], os_version=os_id[1])
-        host_info_entry.save()
-        centos_installed_packages = centos7_get_all_installed_packages(ssh)
-        centos_converted_package_list = []
-        for x in centos_installed_packages:
-            #print(x)
-            #installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[2])
-            #installed_package_entry.save()
-            centos_converted_package_list.append(InstalledPackageList(host_addr=host_address, package=x[0], currentver=x[2]))
-        InstalledPackageList.objects.bulk_create(centos_converted_package_list)
-        centos_held_packages = centos7_get_locked_packages(ssh)
-        centos_converted_held_packages = []
-        for x in centos_held_packages:
-            #print(x)
-            #held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
-            #held_package_entry.save()
-            centos_converted_held_packages.append(HeldPackageList(host_addr=host_address,package=x[0],currentver=x[1]))
-        HeldPackageList.objects.bulk_create(centos_converted_held_packages)
-        centos_update_packages = centos7_get_package_updates(ssh)
-        centos_converted_update_list = []
-        for x in centos_update_packages:
-            #print(x)
-            for z in centos_installed_packages:
-                #print(z)
-                if x[0] in z:
-                    current_package_version = z[2]
-            centos_converted_update_list.append(UpdateablePackageList(host_addr=host_address,package=x[0],currentver=current_package_version,newver=x[2]))
-        UpdateablePackageList.objects.bulk_create(centos_converted_update_list)    
-            #update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=current_package_version,newver=x[2])
-            #update_package_entry.save()
+        try:
+            # Install required packages for functionality
+            stdin, stdout, stderr = ssh.exec_command('sudo yum -y install yum-versionlock')
+            exit_status = stdout.channel.recv_exit_status()
+            host_entry = Hosts(hostaddr=scan_address)
+            host_entry.save()
+            host_address = Hosts.objects.only('hostaddr').get(hostaddr=scan_address)
+            
+            host_name = get_hostname(ssh)
+            #Strip whitespace from end of hostname
+            host_name = host_name.rstrip()
+            host_info_entry = HostInfo(host_addr=host_address, host_name=host_name, os_name=os_id[0], os_version=os_id[1])
+            host_info_entry.save()
+            centos_installed_packages = centos7_get_all_installed_packages(ssh)
+            centos_converted_package_list = []
+            for x in centos_installed_packages:
+                #print(x)
+                #installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[2])
+                #installed_package_entry.save()
+                centos_converted_package_list.append(InstalledPackageList(host_addr=host_address, package=x[0], currentver=x[2]))
+            InstalledPackageList.objects.bulk_create(centos_converted_package_list)
+            centos_held_packages = centos7_get_locked_packages(ssh)
+            centos_converted_held_packages = []
+            for x in centos_held_packages:
+                #print(x)
+                #held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
+                #held_package_entry.save()
+                centos_converted_held_packages.append(HeldPackageList(host_addr=host_address,package=x[0],currentver=x[1]))
+            HeldPackageList.objects.bulk_create(centos_converted_held_packages)
+            centos_update_packages = centos7_get_package_updates(ssh)
+            centos_converted_update_list = []
+            for x in centos_update_packages:
+                #print(x)
+                for z in centos_installed_packages:
+                    #print(z)
+                    if x[0] in z:
+                        current_package_version = z[2]
+                centos_converted_update_list.append(UpdateablePackageList(host_addr=host_address,package=x[0],currentver=current_package_version,newver=x[2]))
+            UpdateablePackageList.objects.bulk_create(centos_converted_update_list)    
+                #update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=current_package_version,newver=x[2])
+                #update_package_entry.save()
+        except:
+            print("PROBLEM SCANNING CENTOS HOST!")
 
     if 'Ubuntu' in os_id[0]:
-        host_entry = Hosts(hostaddr=scan_address)
-        host_entry.save()
-        host_address = Hosts.objects.only('hostaddr').get(hostaddr=scan_address)
-        #FIX THIS BIT - REARRANGE MODELS AS REQUIRED!
-        host_name = get_hostname(ssh)
-        #Strip whitespace from end of hostname
-        host_name = host_name.rstrip()
-        host_info_entry = HostInfo(host_addr=host_address, host_name=host_name, os_name=os_id[0], os_version=os_id[1])
-        host_info_entry.save()
-        ubuntu_installed_packages = ubuntu_get_all_installed_packages(ssh)
-        ubuntu_converted_package_list = []
-        for x in ubuntu_installed_packages:
-            # BEGIN ORIGINAL WORKING CODE
-            #print(x)
-            #installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[1])
-            #installed_package_entry.save()
-            # END ORIGINAL WORKING CODE
-            # BEGIN BULK CREATE CODE
-            ubuntu_converted_package_list.append(InstalledPackageList(host_addr=host_address, package=x[0], currentver=x[1]))
-        InstalledPackageList.objects.bulk_create(ubuntu_converted_package_list)
-            # END BULK CREATE CODE
-        ubuntu_held_packages = ubuntu_get_held_packages(ssh)
-        ubuntu_converted_held_packages = []
-        for x in ubuntu_held_packages:
-            #print(x)
-            #held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
-            #held_package_entry.save()
-            ubuntu_converted_held_packages.append(HeldPackageList(host_addr=host_address,package=x[0],currentver=x[1]))
-        HeldPackageList.objects.bulk_create(ubuntu_converted_held_packages)
-        ubuntu_update_packages = ubuntu_get_package_updates(ssh)
-        ubuntu_converted_updates_list = []
-        for x in ubuntu_update_packages:
-            #print(x)
-            #update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2])
-            #update_package_entry.save()
-            ubuntu_converted_updates_list.append(UpdateablePackageList(host_addr=host_address,package=x[0],currentver=x[1],newver=x[2]))
-        UpdateablePackageList.objects.bulk_create(ubuntu_converted_updates_list)
+        try:
+            host_entry = Hosts(hostaddr=scan_address)
+            host_entry.save()
+            host_address = Hosts.objects.only('hostaddr').get(hostaddr=scan_address)
+            #FIX THIS BIT - REARRANGE MODELS AS REQUIRED!
+            host_name = get_hostname(ssh)
+            #Strip whitespace from end of hostname
+            host_name = host_name.rstrip()
+            host_info_entry = HostInfo(host_addr=host_address, host_name=host_name, os_name=os_id[0], os_version=os_id[1])
+            host_info_entry.save()
+            ubuntu_installed_packages = ubuntu_get_all_installed_packages(ssh)
+            ubuntu_converted_package_list = []
+            for x in ubuntu_installed_packages:
+                # BEGIN ORIGINAL WORKING CODE
+                #print(x)
+                #installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[1])
+                #installed_package_entry.save()
+                # END ORIGINAL WORKING CODE
+                # BEGIN BULK CREATE CODE
+                ubuntu_converted_package_list.append(InstalledPackageList(host_addr=host_address, package=x[0], currentver=x[1]))
+            InstalledPackageList.objects.bulk_create(ubuntu_converted_package_list)
+                # END BULK CREATE CODE
+            ubuntu_held_packages = ubuntu_get_held_packages(ssh)
+            ubuntu_converted_held_packages = []
+            for x in ubuntu_held_packages:
+                #print(x)
+                #held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
+                #held_package_entry.save()
+                ubuntu_converted_held_packages.append(HeldPackageList(host_addr=host_address,package=x[0],currentver=x[1]))
+            HeldPackageList.objects.bulk_create(ubuntu_converted_held_packages)
+            ubuntu_update_packages = ubuntu_get_package_updates(ssh)
+            ubuntu_converted_updates_list = []
+            for x in ubuntu_update_packages:
+                #print(x)
+                #update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2])
+                #update_package_entry.save()
+                ubuntu_converted_updates_list.append(UpdateablePackageList(host_addr=host_address,package=x[0],currentver=x[1],newver=x[2]))
+            UpdateablePackageList.objects.bulk_create(ubuntu_converted_updates_list)
+        except:
+            print("PROBLEM SCANNING UBUNTU HOST!")
 
  
 
