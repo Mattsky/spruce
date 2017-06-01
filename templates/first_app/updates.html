@@ -29,12 +29,12 @@
 					<td>{{ package.package }}</td>
 					<td>{{ package.currentver }}</td>
 					<td>{{ package.newver }}</td>
-					<td><input type="checkbox" name="package" value="{{ package.package }}"></td>
+					<td><div class="material-switch pull-right"><input id="{{ package.package }}" type="checkbox" name="package" value="{{ package.package }}"><label for="{{ package.package }}" class="label-success"></label></div></td>
 				</tr>	
 				{% endfor %}
 			</table>
 			{% csrf_token %}
-				<input type="submit" class="btn btn-primary" value="Submit">
+				<input type="submit" class="btn btn-primary" value="Update Selected">
 			</form>
 			{% else %}
 			<h2>No updates are currently available on {{ request.GET.hostname }}.</h2>
