@@ -109,7 +109,7 @@ def ubuntu_get_all_installed_packages(ssh):
     # zssh/xenial 1.5c.debian.1-3.2 amd64
     package_array = []
     converted_package_array = []
-    stdin, stdout, stderr = ssh.exec_command('sudo apt list > /tmp/pkglist')
+    stdin, stdout, stderr = ssh.exec_command('sudo apt list --installed > /tmp/pkglist')
     exit_status = stdout.channel.recv_exit_status()
     sftp = ssh.open_sftp()
     sftp.get('/tmp/pkglist', '/tmp/pkglist_test')
