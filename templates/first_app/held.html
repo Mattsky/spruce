@@ -25,7 +25,7 @@
 				<tr>
 					<td>{{ package.package }}</td>
 					<td>{{ package.currentver }}</td>
-					<td><input type="checkbox" name="package" value="{{ package.package }}"></td>
+					<td><div class="material-switch pull-right"><input id="{{ package.package }}" type="checkbox" name="package" value="{{ package.package }}"><label for="{{ package.package }}" class="label-success"></label></div></td>
 				</tr>	
 				{% endfor %}
 			</table>
