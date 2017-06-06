@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Patch Manger Project - Main Page</title>
+		<title>Patch Manager Project - Main Page</title>
 		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
 	</head>
 	<body>
@@ -24,15 +24,15 @@
 			<form method="POST">
 				<table class="table table-bordered">
 					<thead>
-						<th><p>Host Name</p></th><th><p>IP Address</p></th><th><p>Software Updates</p></th><th><p>Locked Packages</p></th><th><p>All Installed Packages</p></th><th><p>Rescan?</p></th><th><p class="text-danger">DELETE?</p></th>
+						<th><p class="text-center">Host Name</p></th><th><p class="text-center">IP Address</p></th><th><p class="text-center">Software Updates</p></th><th><p class="text-center">Locked Packages</p></th><th><p class="text-center">All Installed Packages</p></th><th><p class="text-center">Rescan?</p></th><th><p color="red" class="text-center">DELETE?</p></th>
 					</thead>
 					{% for sysaddr in hosts %}
 					<tr>
 						<td>{{ sysaddr.1 }}</td>
 						<td>{{ sysaddr.0 }}</td>
-						<td><a href="updates?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">View</a></td>
-						<td><a href="held?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">View</a></td>
-						<td><a href="installed?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">View</a></td>
+						<td><a href="updates?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Software Updates</a></td>
+						<td><a href="held?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Locked Packages</a></td>
+						<td><a href="installed?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Installed Packages</a></td>
 						<td><input name="address" value="{{ sysaddr.0 }}" class="btn btn-warning" type="submit"></td>
 						<td><input name="delete" value="{{ sysaddr.0 }}" class="btn btn-danger" type="submit"></td>
 					</tr>	

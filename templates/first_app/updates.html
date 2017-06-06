@@ -2,6 +2,20 @@
 {% load staticfiles %}
 <html>
 	<head>
+		<script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
+		<script>
+		$(document).ready(function () {
+    		$("#ckbCheckAll").click(function () {
+       			$(".checkBoxClass").prop('checked', $(this).prop('checked'));
+    		});
+    
+    		$(".checkBoxClass").change(function(){
+        		if (!$(this).prop("checked")){
+            		$("#ckbCheckAll").prop("checked",false);
+       			}
+    		});
+		});
+		</script>
 		<meta charset="utf-8">
 		<title>{{ request.GET.hostname }}: Available Updates</title>
 		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
@@ -29,12 +43,16 @@
 					<td>{{ package.package }}</td>
 					<td>{{ package.currentver }}</td>
 					<td>{{ package.newver }}</td>
-					<td><div class="material-switch pull-right"><input id="{{ package.package }}" type="checkbox" name="package" value="{{ package.package }}"><label for="{{ package.package }}" class="label-success"></label></div></td>
+					<td><div class="material-switch pull-right"><input id="{{ package.package }}" type="checkbox" class="checkBoxClass" name="package" value="{{ package.package }}"><label for="{{ package.package }}" class="label-success"></label></div></td>
 				</tr>	
 				{% endfor %}
 			</table>
 			{% csrf_token %}
-				<input type="submit" class="btn btn-primary" value="Update Selected">
+			
+				<table class="table table-bordered"><tr class="text-right"><td>
+				<div class="material-switch2 pull-left"><input type="checkbox" id="ckbCheckAll"> Check All<label class="pull-right" for="ckbCheckAll" class="label-success"></label></td><td>  
+				<input type="submit" class="btn btn-primary" value="Update Selected"></div></td></tr>
+				</table>
 			</form>
 			{% else %}
 			<h2>No updates are currently available on {{ request.GET.hostname }}.</h2>
