@@ -134,13 +134,13 @@ def scan(request):
     try:
 
         if request.method == "POST":
-        
-            scan_address = request.POST['address']
-            print(scan_address)
+            if 'address' in request.POST.keys() and request.POST['address']:
+                scan_address = request.POST['address']
+                print(scan_address)
 
-            rescan(scan_address, TEST_USER, KEYFILE)
-            messages.success(request, 'Scan successful - details added.')
-            return render(request, 'first_app/scan.html')
+                rescan(scan_address, TEST_USER, KEYFILE)
+                messages.success(request, 'Scan successful - details added.')
+                return render(request, 'first_app/scan.html')
 
             
         return render(request,'first_app/scan.html')

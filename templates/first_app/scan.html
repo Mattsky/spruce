@@ -19,13 +19,28 @@
 		</div>
 		{% endif %}
 
-		<div class="container">
+		<div class="container text-center">
+		<div class="row">
+		<div class="col-md-4">
 			<form method="POST">
 			<p>Please enter the IP address to scan.</p>
 			<input type="text" name="address" required pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$" oninvalid="setCustomValidity('Please enter a valid IPv4 address.')">
 			<input type="submit" class="btn btn-primary" value="Submit">
 			{% csrf_token %}
 			</form>
+		</div>
+
+<!--  Use this for upload stuff: https://simpleisbetterthancomplex.com/tutorial/2016/08/01/how-to-upload-files-with-django.html   -->
+
+		<div class="col-md-8">
+                        <form method="POST" enctype="multipart/form-data">
+                        <p>Please upload the file to parse.</p>
+                        <input type="file" name="uploadFile">
+                        <button type="submit" class="btn btn-primary" value="Upload">Upload</button>
+                        {% csrf_token %}
+                        </form>
+                </div>
+		</div>
 		</div>
 
 	</body>
