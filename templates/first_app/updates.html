@@ -4,7 +4,7 @@
 	<head>
 		<script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
 		<script>
-		 $(document).ready(function () {
+		$(document).ready(function () {
     		$("#ckbCheckAll").click(function () {
        			$(".checkBoxClass").prop('checked', $(this).prop('checked'));
     		});
@@ -16,6 +16,21 @@
     		});
 		}); 
 		</script>
+		<script type="text/javascript">
+                function ShowLoading(e) {
+                var div = document.createElement('div');
+                var img = document.createElement('img');
+                img.src = '{% static "images/loading_bar.gif" %}';
+                div.innerHTML = "Please Wait...<br />";
+                div.style.cssText = 'position: fixed; top: 50%; left: 40%; z-index: 5000; width: 422px; text-align: center; background: #FFFFFF; border: 1px solid #000';
+                div.appendChild(img);
+                document.body.appendChild(div);
+                return true;
+                // These 2 lines cancel form submission, so only use if needed.
+                //window.event.cancelBubble = true;
+                //e.stopPropagation();
+                }
+                </script>
 
 		<meta charset="utf-8">
 		<title>{{ request.GET.hostname }}: Available Updates</title>
@@ -31,7 +46,7 @@
 
 		<div class="container">
 			
-			<form method="POST">
+			<form method="POST" runat="server" onsubmit="ShowLoading()">
 
 			<table class="table table-bordered" id="updatetable">
 				<thead>

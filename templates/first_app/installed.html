@@ -5,6 +5,21 @@
 		<meta charset="utf-8">
 		<title>{{ request.GET.hostname }}: All Installed</title>
 		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+		<script type="text/javascript">
+    		function ShowLoading(e) {
+	        var div = document.createElement('div');
+	        var img = document.createElement('img');
+	        img.src = '{% static "images/loading_bar.gif" %}';
+	        div.innerHTML = "Please Wait...<br />";
+	        div.style.cssText = 'position: fixed; top: 50%; left: 40%; z-index: 5000; width: 422px; text-align: center; background: #FFFFFF; border: 1px solid #000';
+	        div.appendChild(img);
+	        document.body.appendChild(div);
+	        return true;
+	        // These 2 lines cancel form submission, so only use if needed.
+	        //window.event.cancelBubble = true;
+	        //e.stopPropagation();
+    		}
+		</script>
 	</head>
 	<body>
 	<div class="jumbotron">
@@ -15,7 +30,7 @@
 
 		<div class="container">
 			{% if installedpackages %}
-			<form method="POST">
+			<form method="POST" runat="server" onsubmit="ShowLoading()">
 			<table class="table table-bordered">
 				<thead>
 					<th>Package Name</th>
