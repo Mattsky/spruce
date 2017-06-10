@@ -3124,12 +3124,8 @@ tbody.collapse.show {
 }
 
 .collapsing {
-  position: relative;
-  height: 0;
-  overflow: hidden;
-  -webkit-transition: height 0.35s ease;
-  -o-transition: height 0.35s ease;
-  transition: height 0.35s ease;
+  -webkit-transition: none;
+  transition: none;
 }
 
 .dropup,
@@ -9362,4 +9358,8 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
 .material-switch > input[type="checkbox"]:checked + label::after {
     background-color: green;
     left: 20px;
+}
+
+span.navigationSpace {
+    padding-left: 50px;
 }

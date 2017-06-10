@@ -20,7 +20,7 @@ from first_app import views
 #from app_two import views
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
+    #url(r'^$', views.index, name='index'),
     url(r'^first_app/', include('first_app.urls')),
     url(r'^admin/', admin.site.urls),
 ]

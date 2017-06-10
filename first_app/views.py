@@ -10,7 +10,9 @@ from first_app.core_functions import *
 from first_app.sql_functions import *
 from first_app.centos7_functions import *
 import paramiko
-
+from django.views.generic.base import TemplateView
+from django_propeller.views import NavBarMixin
+from first_app.navbar import MainNavBar
 
 #TEST_ADDR = '192.168.0.22'
 #TEST_DB_HOST = '172.19.8.70' #OSX lab server
