@@ -153,7 +153,30 @@ def scan(request):
         messages.error(request, e)
         return render(request,'first_app/scan.html')
 
-def sshtest(request):
-    target_address = request.GET['hostaddr']
-    output = get_update_history(target_address, TEST_USER, KEYFILE)
-    return render(request, 'first_app/sshtest.html', {'output': output})
+def update_history(request):
+
+    try:
+
+        target_address = request.GET['hostaddr']
+        output = get_update_history(target_address, TEST_USER, KEYFILE)
+        if request.method == "POST":
+            target_address = request.GET['hostaddr']
+            output = get_update_history(target_address, TEST_USER, KEYFILE)
+            if 'input_id' in request.POST.keys() and request.POST['input_id']:
+                transact_id = request.POST['input_id']
+                print("Trying rollback")
+                print(str(transact_id))
+                print(target_address)
+                print(TEST_USER)
+                rollback_update(str(transact_id), target_address, TEST_USER, KEYFILE)
+                
+                
+                #status_message = rollback_update(transact_id, target_address, TEST_USER, keyfile)
+                #status_message = 'TEST'
+                #messages.info(request, status_message)
+                output = get_update_history(target_address, TEST_USER, KEYFILE)
+
+        return render(request, 'first_app/history.html', {'output': output})
+
+    except:
+        print("OHNOES")

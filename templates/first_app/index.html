@@ -30,7 +30,7 @@
 						<th><p class="text-center">Software Updates</p></th>
 						<th><p class="text-center">Locked Packages</p></th>
 						<th><p class="text-center">Installed Packages</p></th>
-						<th><p class="text=center">SSH test</p></th>
+						<th><p class="text=center">History</p></th>
 						<th><p class="text-center">Rescan?</p></th>
 						<th><p color="red" class="text-center">DELETE?</p></th>
 					</thead>
@@ -41,7 +41,7 @@
 						<td><a href="updates?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Software Updates</a></td>
 						<td><a href="held?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Locked Packages</a></td>
 						<td><a href="installed?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Installed Packages</a></td>
-						<td><a href="sshtest?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">SSH test</a></td>
+						<td><a href="update_history?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">History</a></td>
 						<td><input name="address" value="{{ sysaddr.0 }}" class="btn btn-warning" type="submit"></td>
 						<td><input name="delete" value="{{ sysaddr.0 }}" class="btn btn-danger" type="submit"></td>
 					</tr>	

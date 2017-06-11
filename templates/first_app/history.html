@@ -15,12 +15,25 @@
 		<h2 class="text-center">Here is the recent update history for {{ request.GET.hostname }}: </h2>
 
 		<div class="container">
-					<pre>{{ output }}</pre>
-				{% csrf_token %}
+		<pre>{{ output }}</pre>
 		
-			
 		</div>
-		
+		<div class="text-center">
+		{% if messages %}
+                {% for message in messages %}
+                        {{ message }}
+                {% endfor %}
+		<br>
+                {% endif %}
+		</div>
+		<form method="POST">
+			<div class="text-center">
+			<label for="input_id">Enter the transaction to roll back:</label>
+			<input type="text" id="input_id" name="input_id">
+			{% csrf_token %}
+			<button type="submit" class="btn btn-default">Submit</button>
+			</div>
+		</form>
 		{% else %}
 		<h2>No SSH output from {{ request.GET.hostname }}.</h2>
 		

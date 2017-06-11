@@ -244,3 +244,9 @@ def centos_get_update_history(ssh):
     exit_status = stdout.channel.recv_exit_status()
     output = stdout.read()
     return(output)
+
+def centos7_roll_back_update(ssh, transact_id):
+    stdin, stdout, stderr = ssh.exec_command('sudo yum -y history undo ' + str(transact_id))
+    exit_status = stdout.channel.recv_exit_status()
+    output = stdout.read()
+    return(output)

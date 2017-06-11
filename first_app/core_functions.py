@@ -269,3 +269,17 @@ def get_update_history(TEST_ADDR, TEST_USER, keyfile):
     if 'CentOS' in os_id[0]:
         update_history = centos_get_update_history(ssh)
         return(update_history)
+
+
+def rollback_update(transact_id, TEST_ADDR, TEST_USER, keyfile):
+    ssh = paramiko.SSHClient()
+
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
+    os_id = os_ident(ssh)
+    if 'CentOS' in os_id[0]:
+        print("EXECUTING CORE FUNCTION CALL")
+        rollback_status = centos7_roll_back_update(ssh, transact_id)
+        return(rollback_status)
+
