@@ -9,6 +9,7 @@ from first_app.ubuntu_functions import *
 from first_app.core_functions import *
 from first_app.sql_functions import *
 from first_app.centos7_functions import *
+from first_app.subfunctions import *
 import paramiko
 from django.views.generic.base import TemplateView
 
@@ -151,3 +152,8 @@ def scan(request):
     except NoValidConnectionsError as e:
         messages.error(request, e)
         return render(request,'first_app/scan.html')
+
+def sshtest(request):
+    target_address = '192.168.0.26'
+    output = sshtest_comm(target_address, TEST_USER, KEYFILE)
+    return render(request, 'first_app/sshtest.html', {'output': output})
