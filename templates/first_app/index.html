@@ -20,12 +20,12 @@
 		<h2 class="text-center">List of scanned systems:</h2>
 		<p><p>
 
-		<div class="container">
+		<div class="center_div text-center">
 			{% if hosts %}
 			<form method="POST">
 				<table class="table table-bordered">
 					<thead>
-						<th><p class="text-center">Host Name</p></th><th><p class="text-center">IP Address</p></th><th><p class="text-center">Software Updates</p></th><th><p class="text-center">Locked Packages</p></th><th><p class="text-center">All Installed Packages</p></th><th><p class="text-center">Rescan?</p></th><th><p color="red" class="text-center">DELETE?</p></th>
+						<th><p class="text-center">Host Name</p></th><th><p class="text-center">IP Address</p></th><th><p class="text-center">Software Updates</p></th><th><p class="text-center">Locked Packages</p></th><th><p class="text-center">Installed Packages</p></th><th><p class="text-center">Rescan?</p></th><th><p color="red" class="text-center">DELETE?</p></th>
 					</thead>
 					{% for sysaddr in hosts %}
 					<tr>

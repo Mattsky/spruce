@@ -455,6 +455,9 @@ textarea {
 table {
   border-collapse: collapse;
   background-color: transparent;
+  width: 90%;
+  margin: 0px auto;
+  float: none;
 }
 
 caption {
@@ -760,6 +763,11 @@ pre code {
   margin-right: auto;
   padding-right: 15px;
   padding-left: 15px;
+}
+
+.center_div{
+    margin: 0 auto;
+    width:90% /* value of your choice which suits your alignment */
 }
 
 @media (min-width: 576px) {
