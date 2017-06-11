@@ -154,6 +154,6 @@ def scan(request):
         return render(request,'first_app/scan.html')
 
 def sshtest(request):
-    target_address = '192.168.0.26'
-    output = sshtest_comm(target_address, TEST_USER, KEYFILE)
+    target_address = request.GET['hostaddr']
+    output = get_update_history(target_address, TEST_USER, KEYFILE)
     return render(request, 'first_app/sshtest.html', {'output': output})

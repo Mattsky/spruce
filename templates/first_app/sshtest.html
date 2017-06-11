@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>{{ request.GET.hostname }}: Update History</title>
+		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+	</head>
+	<body>
+	{% include "first_app/navbar.html" %}
+	<div class="jumbotron">
+		<h1 class="text-center">Update History</h1>
+	</div>
+		{% if output %}
+		<h2 class="text-center">Here is the recent update history for {{ request.GET.hostname }}: </h2>
+
+		<div class="container">
+					<pre>{{ output }}</pre>
+				{% csrf_token %}
+		
+			
+		</div>
+		
+		{% else %}
+		<h2>No SSH output from {{ request.GET.hostname }}.</h2>
+		
+		{% endif %}
+
+
+
+	</body>
+</html>
+

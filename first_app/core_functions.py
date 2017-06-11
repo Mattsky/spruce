@@ -258,3 +258,14 @@ def delete_info(scan_address):
 
     # Delete existing info - this cascades down to all other linked tables (foreign keys)
     Hosts.objects.filter(hostaddr=scan_address).delete()
+
+def get_update_history(TEST_ADDR, TEST_USER, keyfile):
+    ssh = paramiko.SSHClient()
+
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
+    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
+    os_id = os_ident(ssh)
+    if 'CentOS' in os_id[0]:
+        update_history = centos_get_update_history(ssh)
+        return(update_history)
