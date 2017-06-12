@@ -270,6 +270,11 @@ def get_update_history(TEST_ADDR, TEST_USER, keyfile):
         update_history = centos_get_update_history(ssh)
         return(update_history)
 
+    if 'Ubuntu' in os_id[0]:
+        update_history = ubuntu_get_update_history(ssh)
+        return(update_history)
+
+
 
 def rollback_update(transact_id, TEST_ADDR, TEST_USER, keyfile):
     ssh = paramiko.SSHClient()

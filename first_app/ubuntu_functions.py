@@ -275,3 +275,22 @@ def ubuntu_install_specific_version_package(ssh, package, version):
         print("SUCCESS")
     except:
         print("FAILURE")
+
+def ubuntu_get_update_history(ssh):
+    converted_output_array = []
+    stdin, stdout, stderr = ssh.exec_command('zcat /var/log/apt/history.log.*.gz | grep -a --text -i upgrade | grep -vi commandline | grep -vi install')
+    exit_status = stdout.channel.recv_exit_status()
+    output = stdout.readlines()
+    for line in output:
+        line = line[9:]
+        line = line.rstrip()
+        sub_list = line.split("),")
+        for x in sub_list:
+            x = x.replace(",","")
+            x = x.replace("(","")
+            x = x.replace(")","")
+            x = x.lstrip()
+            package_info_list = x.split(" ")
+            converted_output_array.append([package_info_list[0], package_info_list[1], package_info_list[2]])
+    #    converted_output_array.append[line]
+    return(converted_output_array)
