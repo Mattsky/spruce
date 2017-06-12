@@ -252,7 +252,7 @@ def centos7_roll_back_update(ssh, transact_id):
         output = stdout.read()
         error_msg = stderr.read()
         if(error_msg):
-            return("An error occurred. Please check the transaction ID.")
+            return("An error occurred. Please check the transaction ID and the system log if issues persist.")
         elif(output):
             return("Operation successful.")
 

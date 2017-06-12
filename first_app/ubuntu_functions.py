@@ -281,6 +281,7 @@ def ubuntu_get_update_history(ssh):
     stdin, stdout, stderr = ssh.exec_command('zcat /var/log/apt/history.log.*.gz | grep -a --text -i upgrade | grep -vi commandline | grep -vi install')
     exit_status = stdout.channel.recv_exit_status()
     output = stdout.readlines()
+    count = 1
     for line in output:
         line = line[9:]
         line = line.rstrip()
@@ -291,6 +292,31 @@ def ubuntu_get_update_history(ssh):
             x = x.replace(")","")
             x = x.lstrip()
             package_info_list = x.split(" ")
-            converted_output_array.append([package_info_list[0], package_info_list[1], package_info_list[2]])
+            converted_output_array.append([count, package_info_list[0], package_info_list[1], package_info_list[2]])
+            count+=1
     #    converted_output_array.append[line]
+    converted_output_array.insert(0,['ID', 'Package', 'Previous Version', 'Updated Version'])
+
     return(converted_output_array)
+
+def ubuntu_roll_back_update(ssh, transact_id):
+    try:
+        update_history_list = ubuntu_get_update_history(ssh)
+        target_update = update_history_list[int(transact_id)]
+        print(target_update[1])
+        print(target_update[2])
+        pkgname = target_update[1].split(":")[0]
+        print(pkgname)
+        commandstring = 'sudo apt-get -y --allow-downgrades -o Dpkg::Options::="--force-confold" --force-yes install ' + pkgname + '=' + target_update[2]
+        print(commandstring)
+        stdin, stdout, stderr = ssh.exec_command('sudo apt-get -y --allow-downgrades -o Dpkg::Options::="--force-confold" --force-yes install ' + pkgname + '=' + target_update[2])
+        exit_status = stdout.channel.recv_exit_status()
+        output = stdout.read()
+        error_msg = stderr.read()
+        if(error_msg):
+            return("An error occurred. Please check the transaction ID and the system log if issues persist.")
+        elif(output):
+            return("Operation successful.")
+
+    except:
+        print("PROBLEM!")

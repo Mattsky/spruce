@@ -285,9 +285,16 @@ def rollback_update(transact_id, TEST_ADDR, TEST_USER, keyfile):
     os_id = os_ident(ssh)
     if 'CentOS' in os_id[0]:
         try:
-            print("EXECUTING CORE FUNCTION CALL")
+            print("EXECUTING CENTOS FUNCTION CALL")
             rollback_status = centos7_roll_back_update(ssh, transact_id)
             return(rollback_status)
         except:
             return("PROBLEM.")
 
+    if 'Ubuntu' in os_id[0]:
+        try:
+            print("EXECUTING UBUNTU FUNCTION CALL")
+            rollback_status = ubuntu_roll_back_update(ssh, transact_id)
+            return(rollback_status)
+        except:
+            return("UBUNTU ROLLBACK PROBLEM.")
