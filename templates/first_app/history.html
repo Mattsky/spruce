@@ -41,12 +41,23 @@
 		<br>
                 {% endif %}
 		</div>
-		<form method="POST" onsubmit="return confirm('WARNING: this is EXPERIMENTAL functionality.\n\nThis may have unintended side-effects like broken dependencies, and COULD break your system.\n\nAre you SURE you want to do this?')">
+		<script type="text/javascript">
+		function confirmRollback() {
+  			if (confirm("WARNING: this is EXPERIMENTAL functionality.\n\nThis may have unintended side-effects like broken dependencies, and COULD break your system.\n\nAre you SURE you want to do this?")) {
+    				ShowLoading();
+				return true;
+  			} else {
+    				return false;
+  			}
+		}
+		</script>
+		<!-- <form method="POST" onsubmit="return confirm('WARNING: this is EXPERIMENTAL functionality.\n\nThis may have unintended side-effects like broken dependencies, and COULD break your system.\n\nAre you SURE you want to do this?')"> -->
+                <form method="POST">
 			<div class="text-center">
 			<label for="input_id">Enter the transaction to roll back:</label>
 			<input type="text" id="input_id" name="input_id">
 			{% csrf_token %}
-			<button type="submit" class="btn btn-default">Submit</button>
+			<button type="submit" onclick="return confirmRollback();" class="btn btn-default">Submit</button>
 			</div>
 		</form>
 		{% else %}
