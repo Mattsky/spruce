@@ -168,12 +168,12 @@ def update_history(request):
                 print(str(transact_id))
                 print(target_address)
                 print(TEST_USER)
-                rollback_update(str(transact_id), target_address, TEST_USER, KEYFILE)
+                #rollback_update(str(transact_id), target_address, TEST_USER, KEYFILE)
                 
                 
-                #status_message = rollback_update(transact_id, target_address, TEST_USER, keyfile)
+                status_message = rollback_update(transact_id, target_address, TEST_USER, KEYFILE)
                 #status_message = 'TEST'
-                #messages.info(request, status_message)
+                messages.info(request, status_message)
                 output = get_update_history(target_address, TEST_USER, KEYFILE)
 
         return render(request, 'first_app/history.html', {'output': output})

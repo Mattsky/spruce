@@ -279,7 +279,10 @@ def rollback_update(transact_id, TEST_ADDR, TEST_USER, keyfile):
     ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'CentOS' in os_id[0]:
-        print("EXECUTING CORE FUNCTION CALL")
-        rollback_status = centos7_roll_back_update(ssh, transact_id)
-        return(rollback_status)
+        try:
+            print("EXECUTING CORE FUNCTION CALL")
+            rollback_status = centos7_roll_back_update(ssh, transact_id)
+            return(rollback_status)
+        except:
+            return("PROBLEM.")
 

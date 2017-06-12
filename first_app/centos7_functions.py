@@ -246,7 +246,15 @@ def centos_get_update_history(ssh):
     return(output)
 
 def centos7_roll_back_update(ssh, transact_id):
-    stdin, stdout, stderr = ssh.exec_command('sudo yum -y history undo ' + str(transact_id))
-    exit_status = stdout.channel.recv_exit_status()
-    output = stdout.read()
-    return(output)
+    try:
+        stdin, stdout, stderr = ssh.exec_command('sudo yum -y history undo ' + str(transact_id))
+        exit_status = stdout.channel.recv_exit_status()
+        output = stdout.read()
+        error_msg = stderr.read()
+        if(error_msg):
+            return("An error occurred. Please check the transaction ID.")
+        elif(output):
+            return("Operation successful.")
+
+    except:
+        print("PROBLEM!")

@@ -27,7 +27,7 @@ SECRET_KEY = '@nm8b_-zfp($k(z7y*2o$mamm@ux6&s+$4n)$ujv2qenrwm0t7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.26', '172.19.8.20', '192.168.0.18']
+ALLOWED_HOSTS = ['192.168.0.26', '172.19.8.20', '192.168.0.18', 'localhost']
 
 
 # Application definition
