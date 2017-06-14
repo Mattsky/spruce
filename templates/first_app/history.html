@@ -29,10 +29,12 @@
 		{% if output %}
 		<h2 class="text-center">Here is the recent update history for {{ request.GET.hostname }}: </h2>
 
-		<div class="container">
+		<div class="container pre-scrollable">
+		<pre>
 		{% for chunk in output %}
-		<pre>{{ chunk }}</pre>
+		{{ chunk }}
 		{% endfor %}
+		</pre>
 		</div>
 		<div class="text-center">
 		{% if messages %}
