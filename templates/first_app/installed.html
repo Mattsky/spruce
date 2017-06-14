@@ -24,14 +24,15 @@
 	<body>
 	{% include "first_app/navbar.html" %}
 	<div class="jumbotron">
-		<h1 class="text-center">System Installed Packages</h1>
+		<h1 class="text-center">{{ request.GET.hostname }}: Installed Packages</h1>
 	</div>
-		<h2 class="text-center">Here are the installed packages on {{ request.GET.hostname }}:</h2>
+		<!-- <h2 class="text-center">Here are the installed packages on {{ request.GET.hostname }}:</h2> -->
 		<p><p>
 
 		<div class="container">
 			{% if installedpackages %}
 			<form method="POST" runat="server" onsubmit="ShowLoading()">
+			<div class=" pre-scrollable">	
 			<table class="table table-bordered">
 				<thead>
 					<th>Package Name</th>
@@ -48,6 +49,7 @@
 				</tr>	
 				{% endfor %}
 			</table>
+		</div>
 			{% csrf_token %}
 			<input type="submit" class="btn btn-primary" value="Submit">
 			</form>

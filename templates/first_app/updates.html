@@ -39,10 +39,10 @@
 	<body>
 	{% include "first_app/navbar.html" %}
 	<div class="jumbotron">
-		<h1 class="text-center">System Updates</h1>
+		<h1 class="text-center">{{ request.GET.hostname }}: Available Updates</h1>
 	</div>
 		{% if availableupdates %}
-		<h2 class="text-center">Here are the available updates on {{ request.GET.hostname }}:</h2>
+		<!-- <h2 class="text-center">Here are the available updates on {{ request.GET.hostname }}:</h2> -->
 		<p><p>
 
 		<div class="container">
