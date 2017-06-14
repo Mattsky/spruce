@@ -2,6 +2,7 @@ import re, time, datetime
 from django.conf import settings
 from django.core.files import File
 import os
+import io
 
 def log_write(packagelist, host_name, action_type):
     try:
@@ -292,11 +293,11 @@ def ubuntu_get_update_history(ssh):
             x = x.replace(")","")
             x = x.lstrip()
             package_info_list = x.split(" ")
-            converted_output_array.append([count, package_info_list[0], package_info_list[1], package_info_list[2]])
+            converted_output_array.append(str(count) + ' | ' + package_info_list[0] + ' | ' + package_info_list[1] + ' | ' + package_info_list[2])
             count+=1
     #    converted_output_array.append[line]
-    converted_output_array.insert(0,['ID', 'Package', 'Previous Version', 'Updated Version'])
-
+    converted_output_array.insert(0,"ID | Package | Previous Version | Updated Version")
+    print(converted_output_array)
     return(converted_output_array)
 
 def ubuntu_roll_back_update(ssh, transact_id):

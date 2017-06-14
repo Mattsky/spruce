@@ -241,9 +241,14 @@ def centos7_update_packages(ssh, packagelist):
 
 def centos_get_update_history(ssh):
     stdin, stdout, stderr = ssh.exec_command('sudo yum history')
+    converted_output = []
     exit_status = stdout.channel.recv_exit_status()
     output = stdout.readlines()
-    return(output)
+    for line in output:
+        line = line.rstrip()
+        converted_output.append(line)
+    print(converted_output)
+    return(converted_output)
 
 def centos7_roll_back_update(ssh, transact_id):
     try:
