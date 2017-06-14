@@ -12,3 +12,6 @@ def sshtest_comm(target_address, TEST_USER, keyfile):
     stdin, stdout, stderr = ssh.exec_command('cat /etc/issue')
     output = stdout.read()
     return(output)
+
+def scan_systems(system_list):
+	print(YAY)

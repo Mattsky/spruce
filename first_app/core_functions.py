@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.files import File
 import paramiko
 import re, time, datetime
+import multiprocessing
 
 def os_ident(ssh):
     OS = ''
@@ -119,7 +120,7 @@ def rescan(scan_address, TEST_USER, keyfile):
             host_entry = Hosts(hostaddr=scan_address)
             host_entry.save()
             host_address = Hosts.objects.only('hostaddr').get(hostaddr=scan_address)
-            #FIX THIS BIT - REARRANGE MODELS AS REQUIRED!
+            
             host_name = get_hostname(ssh)
             #Strip whitespace from end of hostname
             host_name = host_name.rstrip()
@@ -298,3 +299,25 @@ def rollback_update(transact_id, TEST_ADDR, TEST_USER, keyfile):
             return(rollback_status)
         except:
             return("UBUNTU ROLLBACK PROBLEM.")
+
+
+def multi_system_scan(system_list, TEST_USER, keyfile):
+    
+    try:
+        print("STARTING SCANS")
+        plist = []
+        for i in range(0, len(system_list)):
+            scan_address = system_list[i]
+            print("Address is:")
+            print(scan_address)
+            print(TEST_USER)
+            print(keyfile)
+            p = multiprocessing.Process(target = rescan(scan_address, TEST_USER, keyfile))
+            p.start()
+            plist.append(p)
+
+        for p in plist:
+            p.join() # Wait for all processes to finish
+
+    except:
+        print("Multiscan failed.")

@@ -52,6 +52,19 @@ def index(request):
             scan_address = request.POST['delete']
         
             delete_info(scan_address)
+            list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
+    
+            #host_list = {'hosts':list_of_hosts}
+            new_host_list = []
+            #print(list_of_hosts)
+
+            #print(list_of_hosts)
+            for x in list_of_hosts:
+                host_id = Hosts.objects.only('id').get(hostaddr=x)
+                host_name = HostInfo.objects.only('host_name').get(host_addr_id=host_id)
+                new_host_list.append([x, str(host_name)]) 
+
+            host_list = {'hosts':new_host_list} 
             return render(request, 'first_app/index.html', context=host_list)
 
     return render(request,'first_app/index.html',context=host_list)
@@ -180,3 +193,27 @@ def update_history(request):
 
     except:
         print("OHNOES")
+
+
+def upload_file(request):
+    
+    try:
+        if request.method == "POST":
+            system_list = []
+            f = request.FILES['hostFile'] # here you get the files needed
+            for line in f:
+                # Convert bytes literal to string so we can breathe easier..
+                # Check line isn't a section header
+                if '[' not in line.decode("utf-8"):
+                    # Check line isn't totally empty
+                    if line.decode("utf-8") !='\r\n':
+                        print(line.decode("utf-8").rstrip())
+                        host_address=line.decode("utf-8").split('=')[1]
+                        print(host_address)
+                        system_list.append(host_address.rstrip())
+            print(system_list)
+            multi_system_scan(system_list, TEST_USER, KEYFILE)
+        return render(request, 'first_app/upload_inventory.html')
+    except:
+        messages.error(request, 'An error occurred. Please try again.')
+        return render(request, 'first_app/upload_inventory.html')
