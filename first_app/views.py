@@ -150,8 +150,6 @@ def scan(request):
         if request.method == "POST":
             if 'address' in request.POST.keys() and request.POST['address']:
                 scan_address = request.POST['address']
-                print(scan_address)
-
                 rescan(scan_address, TEST_USER, KEYFILE)
                 messages.success(request, 'Scan successful - details added.')
                 return render(request, 'first_app/scan.html')
@@ -213,6 +211,7 @@ def upload_file(request):
                         system_list.append(host_address.rstrip())
             print(system_list)
             multi_system_scan(system_list, TEST_USER, KEYFILE)
+            messages.success(request, 'All systems were scanned. Please check the index.')
         return render(request, 'first_app/upload_inventory.html')
     except:
         messages.error(request, 'An error occurred. Please try again.')

@@ -92,15 +92,11 @@ def ubuntu_get_held_packages(ssh):
         x = x.rstrip('\n')
         stdin, stdout, stderr = ssh.exec_command('sudo apt list ' + x )
         heldpackageinfo = stdout.readlines()
-        print("WHOLE THING: "+str(heldpackageinfo))
         #Get rid of 'Listing...' entry
         heldpackageinfo = heldpackageinfo[1:]
         for z in heldpackageinfo:
-            print("HELD PACKAGE: "+ z )
             package_name = str.split(z)[0]
-            print(package_name)
             package_ver = str.split(z)[1]
-            print(package_ver)
             package_info.append([package_name, package_ver])
     return(package_info)
 
@@ -297,7 +293,6 @@ def ubuntu_get_update_history(ssh):
             count+=1
     #    converted_output_array.append[line]
     converted_output_array.insert(0,"ID | Package | Previous Version | Updated Version")
-    print(converted_output_array)
     return(converted_output_array)
 
 def ubuntu_roll_back_update(ssh, transact_id):

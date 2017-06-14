@@ -68,7 +68,6 @@ def rescan(scan_address, TEST_USER, keyfile):
 
     ssh.connect(scan_address, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
-    print(os_id)
             
     if 'CentOS' in os_id[0]:
         try:
@@ -223,19 +222,15 @@ def hold_packages(host_id, packages_to_hold, TEST_ADDR, TEST_USER, keyfile):
 
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     host_address = Hosts.objects.only('hostaddr').get(hostaddr=host_id)
-    print(host_address)
     ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
         #for x in packages_to_hold:
         #    print(x)
-        print("UBUNTU PACKAGES TO HOLD:")
-        print(packages_to_hold)
         ubuntu_hold_packages(ssh, packages_to_hold)
         HeldPackageList.objects.filter(host_addr=host_address).delete()
         ubuntu_held_packages = ubuntu_get_held_packages(ssh)
         for x in ubuntu_held_packages:
-            print(x)
             held_package_entry = HeldPackageList(host_addr=host_address,package=x[0],currentver=x[1])
             held_package_entry.save()
         #ubuntu_create_host_held_package_table(TEST_DB_HOST, TEST_DB, TEST_USER, TEST_PASS, syshost, held_packages)
@@ -243,12 +238,10 @@ def hold_packages(host_id, packages_to_hold, TEST_ADDR, TEST_USER, keyfile):
     if 'CentOS' in os_id[0]:
         #for x in packages_to_hold:
             #print(x)
-        print(type(packages_to_hold))
         centos7_lock_packages(ssh, packages_to_hold)
         HeldPackageList.objects.filter(host_addr=host_address).delete()
         centos_held_packages = centos7_get_locked_packages(ssh)
         for x in centos_held_packages:
-            print(x)
             held_package_entry = HeldPackageList(host_addr=host_address,package=x[0],currentver=x[1])
             held_package_entry.save()
 
@@ -308,10 +301,6 @@ def multi_system_scan(system_list, TEST_USER, keyfile):
         plist = []
         for i in range(0, len(system_list)):
             scan_address = system_list[i]
-            print("Address is:")
-            print(scan_address)
-            print(TEST_USER)
-            print(keyfile)
             p = multiprocessing.Process(target = rescan(scan_address, TEST_USER, keyfile))
             p.start()
             plist.append(p)

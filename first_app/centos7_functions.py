@@ -67,7 +67,6 @@ def centos7_get_package_updates(ssh):
     package_updates = stdout.readlines()
     # Remove header lines (cruft)
     
-    print(type(package_updates))
     arch_to_check = ['x86_64','noarch']
     for line in package_updates:
         if any(x in line for x in arch_to_check):
@@ -128,8 +127,6 @@ def centos7_get_locked_packages(ssh):
             package_name = re.split('(\d.*)', package_info)[0]
             package_name = package_name[:-1]
             package_version = re.split('(\d.*)', package_info)[1]
-            print(package_name)
-            print(package_version)
             locked_package_info.append([package_name, package_version])
     # Return alphabetically sorted list of packages
     return(sorted(locked_package_info))
@@ -247,7 +244,6 @@ def centos_get_update_history(ssh):
     for line in output:
         line = line.rstrip()
         converted_output.append(line)
-    print(converted_output)
     return(converted_output)
 
 def centos7_roll_back_update(ssh, transact_id):
