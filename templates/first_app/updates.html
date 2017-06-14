@@ -68,10 +68,10 @@
 			</table>
 			{% csrf_token %}
 			
-				<table class="table table-bordered text-center"><tr><td>
-				<div class="material-switch2 pull-left"><input type="checkbox" id="ckbCheckAll"> Check All<label for="ckbCheckAll" class="label-success"></label></td><td> 
+				<!-- <table class="table table-bordered text-center"><tr><td> -->
+				<div class="material-switch2 text-center"><input type="checkbox" id="ckbCheckAll"> Check All<label for="ckbCheckAll" class="label-success"></label></td><td> 
 				<input type="submit" class="btn btn-primary" value="Update Selected"></div></td></tr>
-				</table>
+				<!-- </table> -->
 			</form>
 			{% else %}
 			<h2>No updates are currently available on {{ request.GET.hostname }}.</h2>
