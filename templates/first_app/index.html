@@ -17,6 +17,15 @@
 		{% endfor %}
 		{% endif %}
 	</div>
+	<script type="text/javascript">
+		function confirmRollback() {
+  			if (confirm("WARNING: this will remove all information held about this system.\n\nYou'll need to manually rescan it if you want to manage it from here again.\n\nAre you SURE you want to do this?")) {
+				return true;
+  			} else {
+    				return false;
+  			}
+		}
+		</script>
 		<h2 class="text-center">List of scanned systems:</h2>
 		<p><p>
 
@@ -32,7 +41,7 @@
 						<th><p class="text-center">Installed Packages</p></th>
 						<th><p class="text=center">History</p></th>
 						<th><p class="text-center">Rescan?</p></th>
-						<th><p color="red" class="text-center">DELETE?</p></th>
+						<th><p class="text-center text-danger">DELETE?</p></th>
 					</thead>
 					{% for sysaddr in hosts %}
 					<tr>
@@ -43,7 +52,7 @@
 						<td><a href="installed?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Installed Packages</a></td>
 						<td><a href="update_history?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">History</a></td>
 						<td><input name="address" value="{{ sysaddr.0 }}" class="btn btn-warning" type="submit"></td>
-						<td><input name="delete" value="{{ sysaddr.0 }}" class="btn btn-danger" type="submit"></td>
+						<td><input name="delete" onclick="return confirmRollback();" value="{{ sysaddr.0 }}" class="btn btn-danger" type="submit"></td>
 					</tr>	
 					{% endfor %}
 				</table>
