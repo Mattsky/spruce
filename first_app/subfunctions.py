@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.files import File
 import paramiko
 import re, time, datetime, os
+import multiprocessing
 
 def sshtest_comm(target_address, TEST_USER, keyfile):
     ssh = paramiko.SSHClient()
@@ -13,5 +14,4 @@ def sshtest_comm(target_address, TEST_USER, keyfile):
     output = stdout.read()
     return(output)
 
-def scan_systems(system_list):
-	print(YAY)
+

@@ -6,6 +6,21 @@
 		<meta charset="utf-8">
 		<title>Patch Manager Project - Main Page</title>
 		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+		<script type="text/javascript">
+    		function ShowLoading(e) {
+	        var div = document.createElement('div');
+	        var img = document.createElement('img');
+	        img.src = '{% static "images/loading_bar.gif" %}';
+	        div.innerHTML = "Please Wait...<br />";
+	        div.style.cssText = 'position: fixed; top: 50%; left: 40%; z-index: 5000; width: 422px; text-align: center; background: #FFFFFF; border: 1px solid #000';
+	        div.appendChild(img);
+	        document.body.appendChild(div);
+	        return true;
+	        // These 2 lines cancel form submission, so only use if needed.
+	        //window.event.cancelBubble = true;
+	        //e.stopPropagation();
+    		}
+		</script>
 	</head>
 	<body>
 	{% include "first_app/navbar.html" %}
@@ -31,7 +46,7 @@
 
 		<div class="center_div text-center">
 			{% if hosts %}
-			<form method="POST">
+			<form method="POST" runat="server" onsubmit="ShowLoading()">
 				<table class="table table-bordered">
 					<thead>
 						<th><p class="text-center">Host Name</p></th>
@@ -39,7 +54,7 @@
 						<th><p class="text-center">Software Updates</p></th>
 						<th><p class="text-center">Locked Packages</p></th>
 						<th><p class="text-center">Installed Packages</p></th>
-						<th><p class="text=center">History</p></th>
+						<th><p class="text-center">History</p></th>
 						<th><p class="text-center">Rescan?</p></th>
 						<th><p class="text-center text-danger">DELETE?</p></th>
 					</thead>
@@ -47,11 +62,11 @@
 					<tr>
 						<td>{{ sysaddr.1 }}</td>
 						<td>{{ sysaddr.0 }}</td>
-						<td><a href="updates?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Software Updates</a></td>
-						<td><a href="held?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Locked Packages</a></td>
-						<td><a href="installed?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Installed Packages</a></td>
-						<td><a href="update_history?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">History</a></td>
-						<td><input name="address" value="{{ sysaddr.0 }}" class="btn btn-warning" type="submit"></td>
+						<td><a href="updates?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
+						<td><a href="held?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
+						<td><a href="installed?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
+						<td><a href="update_history?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
+						<td><button name="address" value="{{ sysaddr.0 }}" class="btn btn-warning" type="submit">RESCAN</button></td>
 						<td><input name="delete" onclick="return confirmRollback();" value="{{ sysaddr.0 }}" class="btn btn-danger" type="submit"></td>
 					</tr>	
 					{% endfor %}

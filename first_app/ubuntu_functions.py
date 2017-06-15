@@ -74,10 +74,10 @@ def ubuntu_get_package_updates(ssh):
         #for x in package_updates:
         package_name_temp = re.search(r'^(.+?)/', x)
         package_name = package_name_temp.group(1)
-        package_current_ver_temp = re.search(r' (.+?) ', x)
-        package_current_ver = package_current_ver_temp.group(1)
-        package_new_ver_temp = re.search(r'upgradable from: (.+?)]', x)
+        package_new_ver_temp = re.search(r' (.+?) ', x)
         package_new_ver = package_new_ver_temp.group(1)
+        package_current_ver_temp = re.search(r'upgradable from: (.+?)]', x)
+        package_current_ver = package_current_ver_temp.group(1)
         y = [package_name, package_current_ver, package_new_ver]
         converted_array.append(y)
     return(converted_array)

@@ -29,11 +29,8 @@ def index(request):
     
     list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
     
-    #host_list = {'hosts':list_of_hosts}
     new_host_list = []
-    #print(list_of_hosts)
-
-    #print(list_of_hosts)
+    
     for x in list_of_hosts:
         host_id = Hosts.objects.only('id').get(hostaddr=x)
         host_name = HostInfo.objects.only('host_name').get(host_addr_id=host_id)
@@ -46,6 +43,17 @@ def index(request):
             scan_address = request.POST['address']
         
             rescan(scan_address, TEST_USER, KEYFILE)
+            list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
+    
+            #host_list = {'hosts':list_of_hosts}
+            new_host_list = []
+
+            for x in list_of_hosts:
+                host_id = Hosts.objects.only('id').get(hostaddr=x)
+                host_name = HostInfo.objects.only('host_name').get(host_addr_id=host_id)
+                new_host_list.append([x, str(host_name)]) 
+
+            host_list = {'hosts':new_host_list} 
             return render(request, 'first_app/index.html', context=host_list)
 
         if 'delete' in request.POST.keys() and request.POST['delete']:
@@ -54,11 +62,8 @@ def index(request):
             delete_info(scan_address)
             list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
     
-            #host_list = {'hosts':list_of_hosts}
             new_host_list = []
-            #print(list_of_hosts)
-
-            #print(list_of_hosts)
+            
             for x in list_of_hosts:
                 host_id = Hosts.objects.only('id').get(hostaddr=x)
                 host_name = HostInfo.objects.only('host_name').get(host_addr_id=host_id)

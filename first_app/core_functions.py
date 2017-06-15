@@ -279,7 +279,6 @@ def rollback_update(transact_id, TEST_ADDR, TEST_USER, keyfile):
     os_id = os_ident(ssh)
     if 'CentOS' in os_id[0]:
         try:
-            print("EXECUTING CENTOS FUNCTION CALL")
             rollback_status = centos7_roll_back_update(ssh, transact_id)
             return(rollback_status)
         except:
@@ -287,7 +286,6 @@ def rollback_update(transact_id, TEST_ADDR, TEST_USER, keyfile):
 
     if 'Ubuntu' in os_id[0]:
         try:
-            print("EXECUTING UBUNTU FUNCTION CALL")
             rollback_status = ubuntu_roll_back_update(ssh, transact_id)
             return(rollback_status)
         except:
@@ -297,8 +295,9 @@ def rollback_update(transact_id, TEST_ADDR, TEST_USER, keyfile):
 def multi_system_scan(system_list, TEST_USER, keyfile):
     
     try:
-        print("STARTING SCANS")
         plist = []
+        # Delete existing info otherwise scans hang. Not efficient - needs looking in to. Maybe search existing hosts
+        # in db and remove from list if found, then pass final list into multiprocessing call below?
         for x in system_list:
             delete_info(x)
 
