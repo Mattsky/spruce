@@ -30,7 +30,7 @@
 		
 
 		<div class="container text-center">
-			<div class="col-md-4 col-md-offset-4">
+			<!-- <div class="col-md-4 col-md-offset-4"> -->
 				
 					<form method="POST" enctype="multipart/form-data" runat="server" onsubmit="ShowLoading()">
 					{% if messages %}
@@ -41,12 +41,15 @@
 						</div>
 					{% endif %}
 					<p>Please select the inventory file to upload.</p>
-					<input type="file" name="hostFile" />
+					<label for="file-upload" class="custom-file-upload">
+					    <i class="fa fa-cloud-upload"></i> Custom Upload
+					</label>
+					<input id="file-upload" type="file" name="hostFile"/>
 					<button type="submit" class="btn btn-primary" value="Upload">Upload</button>
 					{% csrf_token %}
 					</form>
 				
-			</div>
+			<!-- </div> -->
 		</div>
 	</body>
 </html>

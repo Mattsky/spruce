@@ -299,6 +299,9 @@ def multi_system_scan(system_list, TEST_USER, keyfile):
     try:
         print("STARTING SCANS")
         plist = []
+        for x in system_list:
+            delete_info(x)
+
         for i in range(0, len(system_list)):
             scan_address = system_list[i]
             p = multiprocessing.Process(target = rescan(scan_address, TEST_USER, keyfile))
