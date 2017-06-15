@@ -63,7 +63,8 @@
 					{% for sysaddr in hosts %}
 					<tr>
 						<td>{{ sysaddr.1 }}</td>
-						<td>{{ sysaddr.2 }}</td>
+						<!-- <td>{{ sysaddr.2 }}</td>  show OS in text -->
+						<td><img src="{% static "images/" %}{{ sysaddr.2 }}.png"></td>
 						<td>{{ sysaddr.3 }}</td>
 						<td>{{ sysaddr.0 }}</td>
 						<td><a href="updates?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
@@ -71,7 +72,7 @@
 						<td><a href="installed?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
 						<td><a href="update_history?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
 						<td><button name="address" value="{{ sysaddr.0 }}" class="btn btn-warning" type="submit">RESCAN</button></td>
-						<td><input name="delete" onclick="return confirmRollback();" value="{{ sysaddr.0 }}" class="btn btn-danger" type="submit"></td>
+						<td><button name="delete" onclick="return confirmRollback();" value="{{ sysaddr.0 }}" class="btn btn-danger" type="submit">DELETE</button></td>
 					</tr>	
 					{% endfor %}
 				</table>
