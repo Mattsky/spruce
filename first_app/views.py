@@ -34,7 +34,15 @@ def index(request):
     for x in list_of_hosts:
         host_id = Hosts.objects.only('id').get(hostaddr=x)
         host_name = HostInfo.objects.only('host_name').get(host_addr_id=host_id)
-        new_host_list.append([x, str(host_name)]) 
+
+        os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
+        os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
+
+        print(os_name[0])
+        
+        new_host_list.append([x, str(host_name), str(os_name[0]), str(os_version[0])]) 
+
+    print(new_host_list)
 
     host_list = {'hosts':new_host_list} 
 

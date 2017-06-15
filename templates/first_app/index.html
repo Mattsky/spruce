@@ -41,7 +41,7 @@
   			}
 		}
 		</script>
-		<h2 class="text-center">List of scanned systems:</h2>
+		<!-- <h2 class="text-center">List of scanned systems:</h2> -->
 		<p><p>
 
 		<div class="center_div text-center">
@@ -50,17 +50,21 @@
 				<table class="table table-bordered">
 					<thead>
 						<th><p class="text-center">Host Name</p></th>
+						<th><p class="text-center">OS</p></th>
+						<th><p class="text-center">Version</p></th>
 						<th><p class="text-center">IP Address</p></th>
 						<th><p class="text-center">Software Updates</p></th>
 						<th><p class="text-center">Locked Packages</p></th>
 						<th><p class="text-center">Installed Packages</p></th>
-						<th><p class="text-center">History</p></th>
+						<th><p class="text-center">Update History</p></th>
 						<th><p class="text-center">Rescan?</p></th>
 						<th><p class="text-center text-danger">DELETE?</p></th>
 					</thead>
 					{% for sysaddr in hosts %}
 					<tr>
 						<td>{{ sysaddr.1 }}</td>
+						<td>{{ sysaddr.2 }}</td>
+						<td>{{ sysaddr.3 }}</td>
 						<td>{{ sysaddr.0 }}</td>
 						<td><a href="updates?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
 						<td><a href="held?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
