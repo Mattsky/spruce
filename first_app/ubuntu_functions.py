@@ -1,53 +1,9 @@
 import re, time, datetime
 from django.conf import settings
 from django.core.files import File
+from first_app.subfunctions import *
 import os
 import io
-
-def log_write(packagelist, host_name, action_type):
-    try:
-
-        log_dir = settings.LOG_DIR
-        if isinstance(packagelist, list):
-
-            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
-            print(log_dir)
-            print(host_name)
-            print(timestamp)
-            logfile_target = os.path.join(log_dir,host_name + '_' + action_type + '-' + timestamp + '.txt')
-            print(logfile_target)
-            logfile = open(logfile_target, 'w')
-            if action_type=="update":
-                logfile.write("The below packages were updated:\n")
-            elif action_type=="unhold":
-                logfile.write("The below packages were unlocked:\n")
-            elif action_type=="hold":
-                logfile.write("The below packages were locked:\n")
-            for item in packagelist:
-                logfile.write("%s\n" % item)
-            logfile.close()
-
-        elif isinstance(packagelist, str):
-
-            timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
-            print(log_dir)
-            print(type(host_name))
-            print(str(host_name))
-            print(timestamp)
-            logfile_target = os.path.join(log_dir,host_name + '_' + action_type + '-' + timestamp + '.txt')
-            print(logfile_target)
-            logfile = open(logfile_target, 'w')
-            if action_type=="update":
-                logfile.write("The below packages were updated:\n")
-            elif action_type=="unhold":
-                logfile.write("The below packages were unlocked:\n")
-            elif action_type=="hold":
-                logfile.write("The below packages were locked:\n")
-            logfile.write("%s\n" % packagelist)
-            logfile.close()
-    except:
-
-        print("FAILURE WRITING LOGS")
 
 def get_hostname(ssh):
     try:
@@ -100,10 +56,10 @@ def ubuntu_get_held_packages(ssh):
             package_info.append([package_name, package_ver])
     return(package_info)
 
-# EXPERIMENTAL CODE TO RETRIEVE LIST OF FILES IN A... FILE AS OPPOSED TO SSH
+
 
 def ubuntu_get_all_installed_packages(ssh):
-    # zssh/xenial 1.5c.debian.1-3.2 amd64
+    
     package_array = []
     converted_package_array = []
     stdin, stdout, stderr = ssh.exec_command('sudo apt list --installed > /tmp/pkglist')
@@ -111,7 +67,7 @@ def ubuntu_get_all_installed_packages(ssh):
     sftp = ssh.open_sftp()
     sftp.get('/tmp/pkglist', '/tmp/pkglist_test')
     sftp.close()
-    #for line in remote_packagelist_file:
+    
     packagefile = open('/tmp/pkglist_test')
     packagelist = packagefile.readlines()[1:]
     for line in packagelist:
@@ -123,7 +79,7 @@ def ubuntu_get_all_installed_packages(ssh):
         converted_package_array.append(y)
     return(converted_package_array)
 
-# END EXPERIMENTAL CODE
+
     
 def ubuntu_hold_packages(ssh, packagelist):
     

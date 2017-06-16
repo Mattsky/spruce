@@ -47,7 +47,7 @@
 		<div class="center_div text-center">
 			{% if hosts %}
 			<form method="POST" runat="server" onsubmit="ShowLoading()">
-				<table class="table table-bordered">
+				<table class="table table-bordered vertical-align">
 					<thead>
 						<th><p class="text-center">Host Name</p></th>
 						<th><p class="text-center">OS</p></th>
@@ -76,6 +76,7 @@
 					</tr>	
 					{% endfor %}
 				</table>
+				<button name="scan_all" value="scan_all" class="btn btn-info" type="submit">Rescan All</button>
 				{% csrf_token %}
 			</form>
 			{% else %}

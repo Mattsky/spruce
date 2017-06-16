@@ -33,17 +33,13 @@ def index(request):
     
     for x in list_of_hosts:
         host_id = Hosts.objects.only('id').get(hostaddr=x)
-        host_name = HostInfo.objects.only('host_name').get(host_addr_id=host_id)
-
+        host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
         os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
         os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
 
-        print(os_name[0])
-        
-        new_host_list.append([x, str(host_name), str(os_name[0]), str(os_version[0])]) 
+        new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0])]) 
 
-    print(new_host_list)
-
+    
     host_list = {'hosts':new_host_list} 
 
     if request.method == "POST":
@@ -53,13 +49,16 @@ def index(request):
             rescan(scan_address, TEST_USER, KEYFILE)
             list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
     
-            #host_list = {'hosts':list_of_hosts}
             new_host_list = []
 
             for x in list_of_hosts:
                 host_id = Hosts.objects.only('id').get(hostaddr=x)
-                host_name = HostInfo.objects.only('host_name').get(host_addr_id=host_id)
-                new_host_list.append([x, str(host_name)]) 
+                host_id = Hosts.objects.only('id').get(hostaddr=x)
+                host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
+                os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
+                os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
+
+                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0])]) 
 
             host_list = {'hosts':new_host_list} 
             return render(request, 'first_app/index.html', context=host_list)
@@ -74,11 +73,33 @@ def index(request):
             
             for x in list_of_hosts:
                 host_id = Hosts.objects.only('id').get(hostaddr=x)
-                host_name = HostInfo.objects.only('host_name').get(host_addr_id=host_id)
-                new_host_list.append([x, str(host_name)]) 
+                host_id = Hosts.objects.only('id').get(hostaddr=x)
+                host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
+                os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
+                os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
+
+                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0])]) 
 
             host_list = {'hosts':new_host_list} 
             return render(request, 'first_app/index.html', context=host_list)
+
+        if 'scan_all' in request.POST.keys() and request.POST['scan_all']:
+            list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
+            multi_system_rescan(list_of_hosts, TEST_USER, KEYFILE)
+
+            new_host_list = []
+            
+            for x in list_of_hosts:
+                host_id = Hosts.objects.only('id').get(hostaddr=x)
+                host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
+                os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
+                os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
+
+                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0])]) 
+
+            host_list = {'hosts':new_host_list} 
+            return render(request, 'first_app/index.html', context=host_list)
+
 
     return render(request,'first_app/index.html',context=host_list)
 
@@ -145,9 +166,6 @@ def installed(request):
             for x in packages_to_lock:
                 print(x)
             hold_packages(host_id, packages_to_lock, TEST_ADDR, TEST_USER, KEYFILE)
-            #TEST_ADDR = syshost
-            
-            #unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER)
 
         return render(request,'first_app/installed.html',context=packageList)
 
@@ -188,15 +206,8 @@ def update_history(request):
             output = get_update_history(target_address, TEST_USER, KEYFILE)
             if 'input_id' in request.POST.keys() and request.POST['input_id']:
                 transact_id = request.POST['input_id']
-                print("Trying rollback")
-                print(str(transact_id))
-                print(target_address)
-                print(TEST_USER)
-                #rollback_update(str(transact_id), target_address, TEST_USER, KEYFILE)
-                
                 
                 status_message = rollback_update(transact_id, target_address, TEST_USER, KEYFILE)
-                #status_message = 'TEST'
                 messages.info(request, status_message)
                 output = get_update_history(target_address, TEST_USER, KEYFILE)
 
@@ -211,18 +222,18 @@ def upload_file(request):
     try:
         if request.method == "POST":
             system_list = []
-            f = request.FILES['hostFile'] # here you get the files needed
+            f = request.FILES['hostFile'] # Grab uploaded file for parsing
             for line in f:
                 # Convert bytes literal to string so we can breathe easier..
                 # Check line isn't a section header
                 if '[' not in line.decode("utf-8"):
                     # Check line isn't totally empty
                     if line.decode("utf-8") !='\r\n':
-                        print(line.decode("utf-8").rstrip())
+                        
                         host_address=line.decode("utf-8").split('=')[1]
-                        print(host_address)
+                        
                         system_list.append(host_address.rstrip())
-            print(system_list)
+            
             multi_system_scan(system_list, TEST_USER, KEYFILE)
             messages.success(request, 'All systems were scanned. Please check the index.')
         return render(request, 'first_app/upload_inventory.html')

@@ -312,3 +312,23 @@ def multi_system_scan(system_list, TEST_USER, keyfile):
 
     except:
         print("Multiscan failed.")
+
+def multi_system_rescan(system_list, TEST_USER, keyfile):
+    
+    try:
+        plist = []
+        
+        for x in system_list:
+            delete_info(x)
+
+        for i in range(0, len(system_list)):
+            scan_address = system_list[i]
+            p = multiprocessing.Process(target = rescan(scan_address, TEST_USER, keyfile))
+            p.start()
+            plist.append(p)
+
+        for p in plist:
+            p.join() # Wait for all processes to finish
+
+    except:
+        print("Multi rescan failed.")
