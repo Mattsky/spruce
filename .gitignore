@@ -3,7 +3,6 @@ __pycache__/
 *.py[cod]
 db.sqlite3
 migrations/
-settings.py
 # C extensions
 *.so
 

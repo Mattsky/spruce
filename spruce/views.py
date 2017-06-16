@@ -31,15 +31,9 @@ import paramiko
 import re, time, datetime
 #from django.views.generic.base import TemplateView
 
-#TEST_ADDR = '192.168.0.22'
-#TEST_DB_HOST = '172.19.8.70' #OSX lab server
-#TEST_DB_HOST = '192.168.0.22' #Home lab DB server
-TEST_DB_HOST = settings.DATABASES['default']['HOST']
-TEST_USER = 'matt'
-TEST_PASS = 'password'
-TEST_DB = 'testdb'
-HOMEDIR = os.path.expanduser('~')
-KEYFILE = HOMEDIR + '/.ssh/id_rsa'
+TEST_USER = settings.TEST_USER
+HOMEDIR = settings.HOMEDIR
+KEYFILE = settings.KEYFILE
 
 # Create your views here.
 
