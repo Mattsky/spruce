@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Manual Scan</title>
+		<title>Spruce - Inventory Scan</title>
 		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
 		<script type="text/javascript">
     		function ShowLoading(e) {
@@ -23,15 +23,16 @@
 		</script>
 	</head>
 	<body>
-	{% include "first_app/navbar.html" %}
+	{% include "spruce/navbar.html" %}
 		<div class="jumbotron">
-			<h1 class="text-center">System Scan - Manual</h1>
+			<h1 class="text-center">System Scan - Upload File</h1>
 		</div>
 		
 
 		<div class="container text-center">
 			
-					<form method="POST" runat="server" onsubmit="ShowLoading()">
+				
+					<form method="POST" enctype="multipart/form-data" runat="server" onsubmit="ShowLoading()">
 					{% if messages %}
 						<div>
 						{% for message in messages %}
@@ -39,13 +40,16 @@
 						{% endfor %}
 						</div>
 					{% endif %}
-					<p>Please enter the IP address and SSH port to scan.</p>
-					<input type="text" name="address" required pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$" oninvalid="setCustomValidity('Please enter a valid IPv4 address.')" placeholder="IPv4 address here">
-					<input type="text" name="sshport" required pattern="[0-9]{1,5}" oninvalid="setCustomValidity('Please enter a valid SSH port.')" placeholder="SSH port here">
-					<button type="submit" class="btn btn-primary" value="Submit">Submit</button>
+					<p>Upload your inventory file here.</p>
+					<label for="file-upload" class="custom-file-upload">
+					    <i class="fa fa-cloud-upload"></i> Select File
+					</label>
+					<input id="file-upload" type="file" name="hostFile"/>
+					<button type="submit" class="btn btn-primary" value="Upload">Upload</button>
 					{% csrf_token %}
 					</form>
 				
+			
 		</div>
 	</body>
 </html>

@@ -19,7 +19,7 @@
 import re, time, datetime
 from django.conf import settings
 from django.core.files import File
-from first_app.subfunctions import *
+from spruce.subfunctions import *
 import os
 import io
 

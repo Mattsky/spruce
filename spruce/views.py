@@ -20,14 +20,14 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 import os
 from django.http import HttpResponse
-from first_app.models import UpdateablePackageList, InstalledPackageList, HeldPackageList, Hosts, HostInfo
+from spruce.models import UpdateablePackageList, InstalledPackageList, HeldPackageList, Hosts, HostInfo
 from django.db import connection
 from django.contrib import messages
-from first_app.ubuntu_functions import *
-from first_app.core_functions import *
-from first_app.sql_functions import *
-from first_app.centos7_functions import *
-from first_app.subfunctions import *
+from spruce.ubuntu_functions import *
+from spruce.core_functions import *
+from spruce.sql_functions import *
+from spruce.centos7_functions import *
+from spruce.subfunctions import *
 import paramiko
 import re, time, datetime
 #from django.views.generic.base import TemplateView
@@ -88,7 +88,7 @@ def index(request):
                 new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
 
             host_list = {'hosts':new_host_list} 
-            return render(request, 'first_app/index.html', context=host_list)
+            return render(request, 'spruce/index.html', context=host_list)
 
         if 'delete' in request.POST.keys() and request.POST['delete']:
             scan_address = request.POST['delete']
@@ -108,7 +108,7 @@ def index(request):
                 new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
 
             host_list = {'hosts':new_host_list} 
-            return render(request, 'first_app/index.html', context=host_list)
+            return render(request, 'spruce/index.html', context=host_list)
 
         if 'scan_all' in request.POST.keys() and request.POST['scan_all']:
             
@@ -136,10 +136,10 @@ def index(request):
                 new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
 
             host_list = {'hosts':new_host_list} 
-            return render(request, 'first_app/index.html', context=host_list)
+            return render(request, 'spruce/index.html', context=host_list)
 
 
-    return render(request,'first_app/index.html',context=host_list)
+    return render(request,'spruce/index.html',context=host_list)
 
 def held(request):
     
@@ -157,7 +157,7 @@ def held(request):
             
             unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER, KEYFILE)
 
-        return render(request,'first_app/held.html',context=packageList)
+        return render(request,'spruce/held.html',context=packageList)
 
     except Hosts.DoesNotExist:
 
@@ -181,7 +181,7 @@ def updates(request):
             
             update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER, KEYFILE)
 
-        return render(request,'first_app/updates.html',context=updateList)
+        return render(request,'spruce/updates.html',context=updateList)
 
     except Hosts.DoesNotExist:
 
@@ -205,7 +205,7 @@ def installed(request):
                 print(x)
             hold_packages(host_id, packages_to_lock, TEST_ADDR, TEST_USER, KEYFILE)
 
-        return render(request,'first_app/installed.html',context=packageList)
+        return render(request,'spruce/installed.html',context=packageList)
 
     except Hosts.DoesNotExist:
 
@@ -225,17 +225,17 @@ def scan(request):
                 scan_address = request.POST['address']
                 rescan(scan_address, scan_port, TEST_USER, KEYFILE)
                 messages.success(request, 'Scan successful - details added.')
-                return render(request, 'first_app/scan.html')
+                return render(request, 'spruce/scan.html')
 
             
-        return render(request,'first_app/scan.html')
+        return render(request,'spruce/scan.html')
 
     except OSError as e:
         messages.error(request, 'The remote system could not be contacted.')
-        return render(request,'first_app/scan.html')
+        return render(request,'spruce/scan.html')
     except NoValidConnectionsError as e:
         messages.error(request, e)
-        return render(request,'first_app/scan.html')
+        return render(request,'spruce/scan.html')
 
 def update_history(request):
 
@@ -253,7 +253,7 @@ def update_history(request):
                 messages.info(request, status_message)
                 output = get_update_history(target_address, TEST_USER, KEYFILE)
 
-        return render(request, 'first_app/history.html', {'output': output})
+        return render(request, 'spruce/history.html', {'output': output})
 
     except:
         print("OHNOES")
@@ -295,7 +295,7 @@ def upload_file(request):
             
             multi_system_scan(system_list, TEST_USER, KEYFILE)
             messages.success(request, 'All systems were scanned. Please check the index.')
-        return render(request, 'first_app/upload_inventory.html')
+        return render(request, 'spruce/upload_inventory.html')
     except:
         messages.error(request, 'An error occurred. Please try again.')
-        return render(request, 'first_app/upload_inventory.html')
+        return render(request, 'spruce/upload_inventory.html')

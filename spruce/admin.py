@@ -16,8 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Spruce.  If not, see <http://www.gnu.org/licenses/>.
 
-from django.apps import AppConfig
+from django.contrib import admin
+from spruce.models import Hosts, HostInfo, HeldPackageList, InstalledPackageList, UpdateablePackageList
 
-
-class FirstAppConfig(AppConfig):
-    name = 'first_app'
+# Register your models here.
+admin.site.register(Hosts)
+admin.site.register(HostInfo)
+admin.site.register(HeldPackageList)
+admin.site.register(InstalledPackageList)
+admin.site.register(UpdateablePackageList)

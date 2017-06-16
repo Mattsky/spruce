@@ -21,7 +21,7 @@ Clone this repo to a directory, edit the settings.py file to reflect your databa
 
 `python manage.py runserver 0.0.0.0:8000`
 
-Access the index page at <webserver address>:8000/first_app .
+Access the index page at <webserver address>:8000/spruce .
 
 ## Contributors
 

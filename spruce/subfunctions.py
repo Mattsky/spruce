@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Spruce.  If not, see <http://www.gnu.org/licenses/>.
 
-from first_app.models import UpdateablePackageList, InstalledPackageList, HeldPackageList, Hosts, HostInfo
+from spruce.models import UpdateablePackageList, InstalledPackageList, HeldPackageList, Hosts, HostInfo
 from django.db import connection, transaction
 from django.conf import settings
 from django.core.files import File
