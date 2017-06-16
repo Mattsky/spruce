@@ -29,6 +29,7 @@ from first_app.sql_functions import *
 from first_app.centos7_functions import *
 from first_app.subfunctions import *
 import paramiko
+import re, time, datetime
 #from django.views.generic.base import TemplateView
 
 #TEST_ADDR = '192.168.0.22'
@@ -51,32 +52,40 @@ def index(request):
     
     for x in list_of_hosts:
         host_id = Hosts.objects.only('id').get(hostaddr=x)
+        host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
+        
         host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
+        
         os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
         os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
 
-        new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0])]) 
+        new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
 
     
     host_list = {'hosts':new_host_list} 
 
     if request.method == "POST":
         if 'address' in request.POST.keys() and request.POST['address']:
-            scan_address = request.POST['address']
-        
-            rescan(scan_address, TEST_USER, KEYFILE)
+            target_address = request.POST['address']
+            scan_address = target_address.split(':')[0]
+            scan_port_temp = target_address.split(':')[1]
+            scan_port = scan_port_temp.split('}')[0]
+            print(scan_address)
+            print(scan_port)
+            
+            rescan(scan_address, scan_port, TEST_USER, KEYFILE)
             list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
     
             new_host_list = []
 
             for x in list_of_hosts:
                 host_id = Hosts.objects.only('id').get(hostaddr=x)
-                host_id = Hosts.objects.only('id').get(hostaddr=x)
+                host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
                 host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
                 os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
                 os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
 
-                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0])]) 
+                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
 
             host_list = {'hosts':new_host_list} 
             return render(request, 'first_app/index.html', context=host_list)
@@ -91,29 +100,40 @@ def index(request):
             
             for x in list_of_hosts:
                 host_id = Hosts.objects.only('id').get(hostaddr=x)
-                host_id = Hosts.objects.only('id').get(hostaddr=x)
+                host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
                 host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
                 os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
                 os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
 
-                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0])]) 
+                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
 
             host_list = {'hosts':new_host_list} 
             return render(request, 'first_app/index.html', context=host_list)
 
         if 'scan_all' in request.POST.keys() and request.POST['scan_all']:
-            list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
-            multi_system_rescan(list_of_hosts, TEST_USER, KEYFILE)
+            
+            list_of_scan_targets = []
+            list_of_addresses = Hosts.objects.values_list('hostaddr', flat=True)
+            list_of_ports = Hosts.objects.values_list('hostport', flat=True)
+            for x in range(0, len(list_of_addresses)):
+                #list_of_hosts.append([ list_of_addresses[x] , list_of_ports[x] ])
+                print(list_of_addresses[x])
+                print(list_of_ports[x])
+                list_of_scan_targets.append([list_of_addresses[x], list_of_ports[x]])
+            print(list_of_scan_targets)
+
+            multi_system_rescan(list_of_scan_targets, TEST_USER, KEYFILE)
 
             new_host_list = []
             
             for x in list_of_hosts:
                 host_id = Hosts.objects.only('id').get(hostaddr=x)
+                host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
                 host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
                 os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
                 os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
 
-                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0])]) 
+                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
 
             host_list = {'hosts':new_host_list} 
             return render(request, 'first_app/index.html', context=host_list)
@@ -198,8 +218,12 @@ def scan(request):
 
         if request.method == "POST":
             if 'address' in request.POST.keys() and request.POST['address']:
+                if 'sshport' not in request.POST:
+                    scan_port = '22'
+                else:
+                    scan_port = request.POST['sshport']
                 scan_address = request.POST['address']
-                rescan(scan_address, TEST_USER, KEYFILE)
+                rescan(scan_address, scan_port, TEST_USER, KEYFILE)
                 messages.success(request, 'Scan successful - details added.')
                 return render(request, 'first_app/scan.html')
 
@@ -242,15 +266,32 @@ def upload_file(request):
             system_list = []
             f = request.FILES['hostFile'] # Grab uploaded file for parsing
             for line in f:
+                teststring = line.decode("utf-8")
+
                 # Convert bytes literal to string so we can breathe easier..
                 # Check line isn't a section header
-                if '[' not in line.decode("utf-8"):
+                if '[' not in teststring:
                     # Check line isn't totally empty
-                    if line.decode("utf-8") !='\r\n':
+                    if teststring !='\r\n':
+                        print(teststring)        
+                        #host_address=line.decode("utf-8").split('=')[1]
+                        if "host" in teststring:
+                            ip_address_temp = re.search(r'ansible_host=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', teststring)
+                            ip_address = ip_address_temp.group(1)
                         
-                        host_address=line.decode("utf-8").split('=')[1]
+                        if "port" in teststring:
+                            print("YAY")
+                            connect_port_temp = re.search(r'ansible_port=(\d+)', teststring)
+                            connect_port = connect_port_temp.group(1)
+                            print("PORT FOUND IN FILE")
+                            print(connect_port)
+                        else:
+                            connect_port=22
+                            print(connect_port)
                         
-                        system_list.append(host_address.rstrip())
+                        system_list.append([ip_address, str(connect_port)])
+            print(system_list)
+
             
             multi_system_scan(system_list, TEST_USER, KEYFILE)
             messages.success(request, 'All systems were scanned. Please check the index.')

@@ -22,6 +22,7 @@ from django.db import models
 
 class Hosts(models.Model):
     hostaddr = models.CharField(max_length=50,unique=True)
+    hostport = models.CharField(max_length=5)
 
     def __str__(self):
         return str(self.hostaddr)

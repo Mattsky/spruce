@@ -75,7 +75,7 @@ def get_hostname(ssh):
     except:
         print("ERROR")
 
-def rescan(scan_address, TEST_USER, keyfile):
+def rescan(scan_address, scan_port, TEST_USER, keyfile):
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -84,7 +84,7 @@ def rescan(scan_address, TEST_USER, keyfile):
     Hosts.objects.filter(hostaddr=scan_address).delete()
     
 
-    ssh.connect(scan_address, username=TEST_USER, key_filename=keyfile, timeout=10)
+    ssh.connect(scan_address, port=int(scan_port), username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
             
     if 'CentOS' in os_id[0]:
@@ -92,7 +92,7 @@ def rescan(scan_address, TEST_USER, keyfile):
             # Install required packages for functionality
             stdin, stdout, stderr = ssh.exec_command('sudo yum -y install yum-versionlock')
             exit_status = stdout.channel.recv_exit_status()
-            host_entry = Hosts(hostaddr=scan_address)
+            host_entry = Hosts(hostaddr=scan_address, hostport=scan_port)
             host_entry.save()
             host_address = Hosts.objects.only('hostaddr').get(hostaddr=scan_address)
             
@@ -104,37 +104,28 @@ def rescan(scan_address, TEST_USER, keyfile):
             centos_installed_packages = centos7_get_all_installed_packages(ssh)
             centos_converted_package_list = []
             for x in centos_installed_packages:
-                #print(x)
-                #installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[2])
-                #installed_package_entry.save()
                 centos_converted_package_list.append(InstalledPackageList(host_addr=host_address, package=x[0], currentver=x[2]))
             InstalledPackageList.objects.bulk_create(centos_converted_package_list)
             centos_held_packages = centos7_get_locked_packages(ssh)
             centos_converted_held_packages = []
             for x in centos_held_packages:
-                #print(x)
-                #held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
-                #held_package_entry.save()
                 centos_converted_held_packages.append(HeldPackageList(host_addr=host_address,package=x[0],currentver=x[1]))
             HeldPackageList.objects.bulk_create(centos_converted_held_packages)
             centos_update_packages = centos7_get_package_updates(ssh)
             centos_converted_update_list = []
             for x in centos_update_packages:
-                #print(x)
                 for z in centos_installed_packages:
-                    #print(z)
                     if x[0] in z:
                         current_package_version = z[2]
                 centos_converted_update_list.append(UpdateablePackageList(host_addr=host_address,package=x[0],currentver=current_package_version,newver=x[2]))
             UpdateablePackageList.objects.bulk_create(centos_converted_update_list)    
-                #update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=current_package_version,newver=x[2])
-                #update_package_entry.save()
+                
         except:
             print("PROBLEM SCANNING CENTOS HOST!")
 
     if 'Ubuntu' in os_id[0]:
         try:
-            host_entry = Hosts(hostaddr=scan_address)
+            host_entry = Hosts(hostaddr=scan_address, hostport=scan_port)
             host_entry.save()
             host_address = Hosts.objects.only('hostaddr').get(hostaddr=scan_address)
             
@@ -313,15 +304,18 @@ def rollback_update(transact_id, TEST_ADDR, TEST_USER, keyfile):
 def multi_system_scan(system_list, TEST_USER, keyfile):
     
     try:
+        print("LEELOO DALLAS MULTISCAN")
+        print(system_list)
         plist = []
         # Delete existing info otherwise scans hang. Not efficient - needs looking in to. Maybe search existing hosts
         # in db and remove from list if found, then pass final list into multiprocessing call below?
         for x in system_list:
-            delete_info(x)
+            delete_info(x[0])
 
         for i in range(0, len(system_list)):
-            scan_address = system_list[i]
-            p = multiprocessing.Process(target = rescan(scan_address, TEST_USER, keyfile))
+            scan_address = system_list[i][0]
+            scan_port = system_list[i][1]
+            p = multiprocessing.Process(target = rescan(scan_address, scan_port, TEST_USER, keyfile))
             p.start()
             plist.append(p)
 
@@ -333,15 +327,19 @@ def multi_system_scan(system_list, TEST_USER, keyfile):
 
 def multi_system_rescan(system_list, TEST_USER, keyfile):
     
+    print("MULTI RESCAN")
+    print(system_list)
     try:
         plist = []
         
         for x in system_list:
-            delete_info(x)
+            print(x)
+            delete_info(x[0])
 
         for i in range(0, len(system_list)):
-            scan_address = system_list[i]
-            p = multiprocessing.Process(target = rescan(scan_address, TEST_USER, keyfile))
+            scan_address = system_list[i][0]
+            scan_port = system_list[i][1]
+            p = multiprocessing.Process(target = rescan(scan_address, scan_port, TEST_USER, keyfile))
             p.start()
             plist.append(p)
 
