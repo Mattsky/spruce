@@ -35,13 +35,10 @@ def os_ident(ssh):
         try:
             remote_file = sftp.open('/etc/redhat-release')
             for line in remote_file:
-                #print(line)
-                # CentOS Linux release 7.3.1611 (Core)
                 if 'CentOS' in line:
                     OS = str.split(line)[0]
                     Version = str.split(line)[3]
                     Version = Version.split('.')[0]
-                    #return(OS + ' ' + Version)
                     osinfo = [OS, Version]
                     return(osinfo)
                 
@@ -51,13 +48,10 @@ def os_ident(ssh):
         try:
             remote_file = sftp.open('/etc/issue')
             for line in remote_file:
-                #print(line)
-                #Ubuntu 16.04.2 LTS \n \l
                 if 'Ubuntu' in line:
                     OS = str.split(line)[0]
                     Version = str.split(line)[1]
                     Version = '.'.join(Version.split('.',2)[0:2])
-                    #return(OS + ' ' + Version)
                     osinfo = [OS, Version]
                     return(osinfo)
 
@@ -137,29 +131,16 @@ def rescan(scan_address, scan_port, TEST_USER, keyfile):
             ubuntu_installed_packages = ubuntu_get_all_installed_packages(ssh)
             ubuntu_converted_package_list = []
             for x in ubuntu_installed_packages:
-                # BEGIN ORIGINAL WORKING CODE
-                #print(x)
-                #installed_package_entry = InstalledPackageList(host_name=host_address, package=x[0], currentver=x[1])
-                #installed_package_entry.save()
-                # END ORIGINAL WORKING CODE
-                # BEGIN BULK CREATE CODE
                 ubuntu_converted_package_list.append(InstalledPackageList(host_addr=host_address, package=x[0], currentver=x[1]))
             InstalledPackageList.objects.bulk_create(ubuntu_converted_package_list)
-                # END BULK CREATE CODE
             ubuntu_held_packages = ubuntu_get_held_packages(ssh)
             ubuntu_converted_held_packages = []
             for x in ubuntu_held_packages:
-                #print(x)
-                #held_package_entry = HeldPackageList(host_name=host_address,package=x[0],currentver=x[1])
-                #held_package_entry.save()
                 ubuntu_converted_held_packages.append(HeldPackageList(host_addr=host_address,package=x[0],currentver=x[1]))
             HeldPackageList.objects.bulk_create(ubuntu_converted_held_packages)
             ubuntu_update_packages = ubuntu_get_package_updates(ssh)
             ubuntu_converted_updates_list = []
             for x in ubuntu_update_packages:
-                #print(x)
-                #update_package_entry = UpdateablePackageList(host_name=host_address,package=x[0],currentver=x[1],newver=x[2])
-                #update_package_entry.save()
                 ubuntu_converted_updates_list.append(UpdateablePackageList(host_addr=host_address,package=x[0],currentver=x[1],newver=x[2]))
             UpdateablePackageList.objects.bulk_create(ubuntu_converted_updates_list)
         except:
@@ -180,11 +161,8 @@ def unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER, keyfile):
         for x in packages_to_unhold:
             HeldPackageList.objects.filter(host_addr=host_id).filter(package=x).delete()
         held_packages = ubuntu_get_held_packages(ssh)
-        #ubuntu_create_host_held_package_table(TEST_DB_HOST, TEST_DB, TEST_USER, TEST_PASS, syshost, held_packages)
 
     if 'CentOS' in os_id[0]:
-        #for x in packages_to_unhold:
-            #print(x)
         centos7_unlock_packages(ssh, packages_to_unhold)
         for x in packages_to_unhold:
             HeldPackageList.objects.filter(host_addr=host_id).filter(package=x).delete()
@@ -200,27 +178,20 @@ def update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER, keyfile):
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
         ubuntu_apply_package_updates(ssh, packages_to_update)
-            #UpdateablePackageList.objects.filter(host_name=host_id).filter(package=x).delete()
         held_packages = ubuntu_get_held_packages(ssh)
         UpdateablePackageList.objects.filter(host_addr=host_id).delete()
-        #ubuntu_create_host_held_package_table(TEST_DB_HOST, TEST_DB, TEST_USER, TEST_PASS, syshost, held_packages)
         ubuntu_update_packages = ubuntu_get_package_updates(ssh)
         for x in ubuntu_update_packages:
-            #print(x)
             update_package_entry = UpdateablePackageList(host_addr=host_address,package=x[0],currentver=x[1],newver=x[2])
             update_package_entry.save()
 
     if 'CentOS' in os_id[0]:
-        #print(type(packages_to_update))
         centos7_update_packages(ssh, packages_to_update)
-            #UpdateablePackageList.objects.filter(host_name=host_id).filter(package=x).delete()
         held_packages = centos7_get_locked_packages(ssh)
         UpdateablePackageList.objects.filter(host_addr=host_id).delete()
         centos_update_packages = centos7_get_package_updates(ssh)
         for x in centos_update_packages:
-            #print(x)
             for z in centos_update_packages:
-                #print(z)
                 if x[0] in z:
                     current_package_version = z[2]
             update_package_entry = UpdateablePackageList(host_addr=host_address,package=x[0],currentver=current_package_version,newver=x[2])
@@ -234,19 +205,14 @@ def hold_packages(host_id, packages_to_hold, TEST_ADDR, TEST_USER, keyfile):
     ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
-        #for x in packages_to_hold:
-        #    print(x)
         ubuntu_hold_packages(ssh, packages_to_hold)
         HeldPackageList.objects.filter(host_addr=host_address).delete()
         ubuntu_held_packages = ubuntu_get_held_packages(ssh)
         for x in ubuntu_held_packages:
             held_package_entry = HeldPackageList(host_addr=host_address,package=x[0],currentver=x[1])
             held_package_entry.save()
-        #ubuntu_create_host_held_package_table(TEST_DB_HOST, TEST_DB, TEST_USER, TEST_PASS, syshost, held_packages)
 
     if 'CentOS' in os_id[0]:
-        #for x in packages_to_hold:
-            #print(x)
         centos7_lock_packages(ssh, packages_to_hold)
         HeldPackageList.objects.filter(host_addr=host_address).delete()
         centos_held_packages = centos7_get_locked_packages(ssh)

@@ -33,7 +33,6 @@ def get_hostname(ssh):
 def centos7_get_package_updates(ssh):
     package_updates = []
     filtered_package_updates = []
-    #ssh.exec_command('sudo apt-get update')
     stdin, stdout, stderr = ssh.exec_command('sudo yum check-updates')
     package_updates = stdout.readlines()
     # Remove header lines (cruft)
@@ -57,7 +56,6 @@ def centos7_get_package_updates(ssh):
     return(filtered_package_updates)
 
 def centos7_get_all_installed_packages(ssh):
-    # yum-plugin-versionlock.noarch         1.1.31-40.el7                    @base
     package_array = []
     filtered_package_array = []
     stdin, stdout, stderr = ssh.exec_command('sudo yum list installed')
@@ -66,7 +64,6 @@ def centos7_get_all_installed_packages(ssh):
     arch_to_check = ['x86_64','noarch']
     for line in package_array:
         if any(x in line for x in arch_to_check): 
-            #print(line)   
             package_name = str.split(line)[0]
             package_version = str.split(line)[1]
 
@@ -93,8 +90,6 @@ def centos7_get_locked_packages(ssh):
             # ...then strip the trailing ".*"...
             package_info = package_info.split('.*')[0]
             # ...and finally split the remainder into package name and version.
-            #package_name = package_info.split('-')[0]
-            #package_version = package_info.split('-',1)[1]
             package_name = re.split('(\d.*)', package_info)[0]
             package_name = package_name[:-1]
             package_version = re.split('(\d.*)', package_info)[1]
@@ -118,7 +113,6 @@ def centos7_lock_packages(ssh, packagelist):
         print(type(packagelist))
         package_list_string = ""
         print(packagelist)
-        #print("LOCK_PACKAGE_FUNCTION_PACKAGELIST: " + type(packagelist))
         
         if isinstance(packagelist, list):
             for x in packagelist:
@@ -153,7 +147,6 @@ def centos7_unlock_packages(ssh, packagelist):
         host_name = host_name.decode("utf-8")
 
         package_list_string = ""
-        # isinstance list check may need changing to tuple when results pulled from DB
         if isinstance(packagelist, list):
             for x in packagelist:
                 package_list_string = package_list_string + x + ' '

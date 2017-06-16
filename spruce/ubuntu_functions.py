@@ -44,8 +44,6 @@ def ubuntu_get_package_updates(ssh):
     del package_updates[0]
     for x in package_updates:
         x = x.rstrip('\n')
-        #ssh.close()
-        #for x in package_updates:
         package_name_temp = re.search(r'^(.+?)/', x)
         package_name = package_name_temp.group(1)
         package_new_ver_temp = re.search(r' (.+?) ', x)
@@ -60,7 +58,6 @@ def ubuntu_get_held_packages(ssh):
     held_packages = []
     package_info = []
     stdin, stdout, stderr = ssh.exec_command('sudo apt-mark showhold')
-    #stdin, stdout, stderr = ssh.exec_command('sudo dpkg -l | grep "^hi"')
     held_packages = stdout.readlines()
     for x in held_packages:
         x = x.rstrip('\n')
@@ -189,8 +186,6 @@ def ubuntu_apply_package_updates(ssh, packagelist):
             print("Installing: " + complete_packagelist)
             stdin, stdout, stderr = ssh.exec_command('sudo apt-get -y install --only-upgrade ' + complete_packagelist)
             stdout = stdout.readlines()
-            #for line in stdout:
-                #print(line)
             action_type = "update"
 
             log_write(packagelist, host_name, action_type)
@@ -215,10 +210,8 @@ def ubuntu_list_package_updates(ssh, date):
         stdin, stdout, stderr = ssh.exec_command("sudo grep -A 1 'Start-Date: " + date + "' /var/log/apt/history.log")
         stdout = stdout.readlines()
         for line in stdout:
-            #print(line)  
             if "Commandline" in line:
                 line = line.rstrip()
-                #print(line)
                 packages_temp = re.search(r'^Commandline: apt-get -y install --only-upgrade (.+?)$', line)
                 if packages_temp:
                     packages = packages_temp.group(1)
@@ -265,7 +258,6 @@ def ubuntu_get_update_history(ssh):
             package_info_list = x.split(" ")
             converted_output_array.append(str(count) + ' | ' + package_info_list[0] + ' | ' + package_info_list[1] + ' | ' + package_info_list[2])
             count+=1
-    #    converted_output_array.append[line]
     converted_output_array.insert(0,"ID | Package | Previous Version | Updated Version")
     return(converted_output_array)
 
