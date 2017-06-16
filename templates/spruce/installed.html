@@ -32,8 +32,8 @@
 		<div class="container">
 			{% if installedpackages %}
 			<form method="POST" runat="server" onsubmit="ShowLoading()">
-			<div class=" pre-scrollable">	
-			<table class="table table-bordered">
+			<!-- <div class=" pre-scrollable"> -->	
+			<table class="table table-bordered header-fixed">
 				<thead>
 					<th>Package Name</th>
 					<th>Current Version</th>
@@ -49,7 +49,7 @@
 				</tr>	
 				{% endfor %}
 			</table>
-		</div>
+			<!-- </div> -->
 			{% csrf_token %}
 			<input type="submit" style="margin:0px auto; display:block;" class="btn btn-primary" value="Submit">
 			</form>
