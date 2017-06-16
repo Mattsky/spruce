@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>{{ request.GET.hostname }}: Update History</title>
+		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+		<script type="text/javascript">
+    		function ShowLoading(e) {
+	        var div = document.createElement('div');
+	        var img = document.createElement('img');
+	        img.src = '{% static "images/loading_bar.gif" %}';
+	        div.innerHTML = "Please Wait...<br />";
+	        div.style.cssText = 'position: fixed; top: 50%; left: 40%; z-index: 5000; width: 422px; text-align: center; background: #FFFFFF; border: 1px solid #000';
+	        div.appendChild(img);
+	        document.body.appendChild(div);
+	        return true;
+	        // These 2 lines cancel form submission, so only use if needed.
+	        //window.event.cancelBubble = true;
+	        //e.stopPropagation();
+    		}
+		</script>
+	</head>
+	<body>
+	{% include "spruce/navbar.html" %}
+	<div class="jumbotron">
+		<h1 class="text-center">Update History</h1>
+	</div>
+		{% if output %}
+		<h2 class="text-center">Here is the recent update history for {{ request.GET.hostname }}: </h2>
+
+		<div class="container pre-scrollable">
+		<pre>
+		{% for chunk in output %}
+		{{ chunk }}
+		{% endfor %}
+		</pre>
+		</div>
+		<div class="text-center">
+		{% if messages %}
+                {% for message in messages %}
+                        {{ message }}
+                {% endfor %}
+		<br>
+                {% endif %}
+		</div>
+		<script type="text/javascript">
+		function confirmRollback() {
+  			if (confirm("WARNING: this is EXPERIMENTAL functionality.\n\nThis may have unintended side-effects like broken dependencies, and COULD break your system.\n\nAre you SURE you want to do this?")) {
+    			ShowLoading();
+				return true;
+  			} else {
+    				return false;
+  			}
+		}
+		</script>
+		<!-- <form method="POST" onsubmit="return confirm('WARNING: this is EXPERIMENTAL functionality.\n\nThis may have unintended side-effects like broken dependencies, and COULD break your system.\n\nAre you SURE you want to do this?')"> -->
+                <form method="POST">
+			<div class="text-center">
+			<label for="input_id">Enter the transaction to roll back:</label>
+			<input type="text" id="input_id" name="input_id">
+			{% csrf_token %}
+			<button type="submit" onclick="return confirmRollback();" class="btn btn-default">Submit</button>
+			</div>
+		</form>
+		{% else %}
+		<h2>No SSH output from {{ request.GET.hostname }}.</h2>
+		
+		{% endif %}
+
+
+
+	</body>
+</html>
+

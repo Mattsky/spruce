@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+{% load filters %}
+{% load staticfiles %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Spruce - Inventory Scan</title>
+		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+		<script type="text/javascript">
+    		function ShowLoading(e) {
+	        var div = document.createElement('div');
+	        var img = document.createElement('img');
+	        img.src = '{% static "images/loading_bar.gif" %}';
+	        div.innerHTML = "Please Wait...<br />";
+	        div.style.cssText = 'position: fixed; top: 50%; left: 40%; z-index: 5000; width: 422px; text-align: center; background: #FFFFFF; border: 1px solid #000';
+	        div.appendChild(img);
+	        document.body.appendChild(div);
+	        return true;
+	        // These 2 lines cancel form submission, so only use if needed.
+	        //window.event.cancelBubble = true;
+	        //e.stopPropagation();
+    		}
+		</script>
+	</head>
+	<body>
+	{% include "spruce/navbar.html" %}
+		<div class="jumbotron">
+			<h1 class="text-center">System Scan - Upload File</h1>
+		</div>
+		
+
+		<div class="container text-center">
+			
+				
+					<form method="POST" enctype="multipart/form-data" runat="server" onsubmit="ShowLoading()">
+					{% if messages %}
+						<div>
+						{% for message in messages %}
+							{{ message }}
+						{% endfor %}
+						</div>
+					{% endif %}
+					<p>Upload your inventory file here.</p>
+					<label for="file-upload" class="custom-file-upload">
+					    <i class="fa fa-cloud-upload"></i> Select File
+					</label>
+					<input id="file-upload" type="file" name="hostFile"/>
+					<button type="submit" class="btn btn-primary" value="Upload">Upload</button>
+					{% csrf_token %}
+					</form>
+				
+			
+		</div>
+	</body>
+</html>

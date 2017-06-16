@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>{{ request.GET.hostname }}: All Installed</title>
+		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+		<script type="text/javascript">
+    		function ShowLoading(e) {
+	        var div = document.createElement('div');
+	        var img = document.createElement('img');
+	        img.src = '{% static "images/loading_bar.gif" %}';
+	        div.innerHTML = "Please Wait...<br />";
+	        div.style.cssText = 'position: fixed; top: 50%; left: 40%; z-index: 5000; width: 422px; text-align: center; background: #FFFFFF; border: 1px solid #000';
+	        div.appendChild(img);
+	        document.body.appendChild(div);
+	        return true;
+	        // These 2 lines cancel form submission, so only use if needed.
+	        //window.event.cancelBubble = true;
+	        //e.stopPropagation();
+    		}
+		</script>
+	</head>
+	<body>
+	{% include "spruce/navbar.html" %}
+	<div class="jumbotron">
+		<h1 class="text-center">{{ request.GET.hostname }}: Installed Packages</h1>
+	</div>
+		<!-- <h2 class="text-center">Here are the installed packages on {{ request.GET.hostname }}:</h2> -->
+		<p><p>
+
+		<div class="container">
+			{% if installedpackages %}
+			<form method="POST" runat="server" onsubmit="ShowLoading()">
+			<!-- <div class=" pre-scrollable"> -->	
+			<table class="table table-bordered header-fixed">
+				<thead>
+					<th>Package Name</th>
+					<th>Current Version</th>
+					<th>Lock (Single)</th>
+					<th>Lock (Multiple)</th>
+				</thead>
+				{% for package in installedpackages %}
+				<tr>
+					<td>{{ package.package }}</td>
+					<td>{{ package.currentver }}</td>
+					<td><div class="text-center"><input name="package" class="btn btn-primary" value="{{ package.package }}" type="submit"></div></td>
+					<td><div class="material-switch pull-right"><input id="{{ package.package }}" type="checkbox" name="package" value="{{ package.package }}"><label for="{{ package.package }}" class="label-success"></label></div></td>
+				</tr>	
+				{% endfor %}
+			</table>
+			<!-- </div> -->
+			{% csrf_token %}
+			<input type="submit" style="margin:0px auto; display:block;" class="btn btn-primary" value="Submit">
+			</form>
+			{% else %}
+			<p>No installed package records found!</p>
+			
+			{% endif %}
+
+		</div>
+
+	</body>
+</html>

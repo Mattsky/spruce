@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+{% load filters %}
+{% load staticfiles %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Spruce - Index</title>
+		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+		<script type="text/javascript">
+    		function ShowLoading(e) {
+	        var div = document.createElement('div');
+	        var img = document.createElement('img');
+	        img.src = '{% static "images/loading_bar.gif" %}';
+	        div.innerHTML = "Please Wait...<br />";
+	        div.style.cssText = 'position: fixed; top: 50%; left: 40%; z-index: 5000; width: 422px; text-align: center; background: #FFFFFF; border: 1px solid #000';
+	        div.appendChild(img);
+	        document.body.appendChild(div);
+	        return true;
+	        // These 2 lines cancel form submission, so only use if needed.
+	        //window.event.cancelBubble = true;
+	        //e.stopPropagation();
+    		}
+		</script>
+	</head>
+	<body>
+	{% include "spruce/navbar.html" %}
+	<div class="jumbotron">
+		<h1 class="text-center">System Index</h1>
+		{% if messages %}
+		{% for message in messages %}
+			{{ message }}
+		{% endfor %}
+		{% endif %}
+	</div>
+	<script type="text/javascript">
+		function confirmRollback() {
+  			if (confirm("WARNING: this will remove all information held about this system.\n\nYou'll need to manually rescan it if you want to manage it from here again.\n\nAre you SURE you want to do this?")) {
+				return true;
+  			} else {
+    				return false;
+  			}
+		}
+		</script>
+		<script type="text/javascript">
+		function confirmRescan() {
+  			if (confirm("WARNING: this will rescan all indexed system.\n\nIf you have a large number of systems, this may take some time.\n\nAre you sure you want to do this?")) {
+				return true;
+  			} else {
+    				return false;
+  			}
+		}
+		</script>
+		<!-- <h2 class="text-center">List of scanned systems:</h2> -->
+		<p><p>
+
+		<div class="center_div text-center">
+			{% if hosts %}
+			<form method="POST" runat="server" onsubmit="ShowLoading()">
+				<table class="table table-bordered vertical-align">
+					<thead>
+						<th><p class="text-center">Host Name</p></th>
+						<th><p class="text-center">OS</p></th>
+						<th><p class="text-center">Version</p></th>
+						<th><p class="text-center">IP Address</p></th>
+						<th><p class="text-center">Software Updates</p></th>
+						<th><p class="text-center">Locked Packages</p></th>
+						<th><p class="text-center">Installed Packages</p></th>
+						<th><p class="text-center">Update History</p></th>
+						<th><p class="text-center">Rescan?</p></th>
+						<th><p class="text-center text-danger">DELETE?</p></th>
+					</thead>
+					{% for sysaddr in hosts %}
+					<tr>
+						<td>{{ sysaddr.1 }}</td>
+						<!-- <td>{{ sysaddr.2 }}</td>  show OS in text -->
+						<td><img src="{% static "images/" %}{{ sysaddr.2 }}.png" title="{{ sysaddr.2 }}"></td>
+						<td>{{ sysaddr.3 }}</td>
+						<td>{{ sysaddr.0 }}:{{ sysaddr.4 }}</td>
+						<td><a href="updates?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
+						<td><a href="held?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
+						<td><a href="installed?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
+						<td><a href="update_history?hostaddr={{ sysaddr.0 }}&hostname={{ sysaddr.1 }}" class="btn btn-info">Display</a></td>
+						<td><button name="address" value="{{ sysaddr.0 }}:{{ sysaddr.4 }}}" class="btn btn-warning" type="submit">RESCAN</button></td>
+						<td><button name="delete" onclick="return confirmRollback();" value="{{ sysaddr.0 }}" class="btn btn-danger" type="submit">DELETE</button></td>
+					</tr>	
+					{% endfor %}
+				</table>
+				<button name="scan_all" onclick="return confirmRescan();" value="scan_all" class="btn btn-info" type="submit">Rescan All</button>
+				{% csrf_token %}
+			</form>
+			{% else %}
+			<p>No access records found!</p>
+			{% endif %}
+
+		</div>
+
+	</body>
+</html>

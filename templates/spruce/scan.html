@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+{% load filters %}
+{% load staticfiles %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Spruce - Manual Scan</title>
+		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
+		<script type="text/javascript">
+    		function ShowLoading(e) {
+	        var div = document.createElement('div');
+	        var img = document.createElement('img');
+	        img.src = '{% static "images/loading_bar.gif" %}';
+	        div.innerHTML = "Please Wait...<br />";
+	        div.style.cssText = 'position: fixed; top: 50%; left: 40%; z-index: 5000; width: 422px; text-align: center; background: #FFFFFF; border: 1px solid #000';
+	        div.appendChild(img);
+	        document.body.appendChild(div);
+	        return true;
+	        // These 2 lines cancel form submission, so only use if needed.
+	        //window.event.cancelBubble = true;
+	        //e.stopPropagation();
+    		}
+		</script>
+	</head>
+	<body>
+	{% include "spruce/navbar.html" %}
+		<div class="jumbotron">
+			<h1 class="text-center">System Scan - Manual</h1>
+		</div>
+		
+
+		<div class="container text-center">
+			
+					<form method="POST" runat="server" onsubmit="ShowLoading()">
+					{% if messages %}
+						<div>
+						{% for message in messages %}
+							{{ message }}
+						{% endfor %}
+						</div>
+					{% endif %}
+					<p>Please enter the IP address and SSH port to scan.</p>
+					<input type="text" name="address" required pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$" oninvalid="setCustomValidity('Please enter a valid IPv4 address.')" placeholder="IPv4 address here">
+					<input type="text" name="sshport" required pattern="[0-9]{1,5}" oninvalid="setCustomValidity('Please enter a valid SSH port.')" placeholder="SSH port here">
+					<button type="submit" class="btn btn-primary" value="Submit">Submit</button>
+					{% csrf_token %}
+					</form>
+				
+		</div>
+	</body>
+</html>
