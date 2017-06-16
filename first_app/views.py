@@ -1,3 +1,21 @@
+# Spruce - a tool to help manage system software states.
+# Copyright (C) 2017 Matt North
+
+# This file is part of Spruce.
+
+# Spruce is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# Spruce is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with Spruce.  If not, see <http://www.gnu.org/licenses/>.
+
 from django.shortcuts import render, redirect
 from django.conf import settings
 import os
@@ -11,7 +29,7 @@ from first_app.sql_functions import *
 from first_app.centos7_functions import *
 from first_app.subfunctions import *
 import paramiko
-from django.views.generic.base import TemplateView
+#from django.views.generic.base import TemplateView
 
 #TEST_ADDR = '192.168.0.22'
 #TEST_DB_HOST = '172.19.8.70' #OSX lab server

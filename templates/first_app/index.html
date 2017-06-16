@@ -41,6 +41,15 @@
   			}
 		}
 		</script>
+		<script type="text/javascript">
+		function confirmRescan() {
+  			if (confirm("WARNING: this will rescan all indexed system.\n\nIf you have a large number of systems, this may take some time.\n\nAre you sure you want to do this?")) {
+				return true;
+  			} else {
+    				return false;
+  			}
+		}
+		</script>
 		<!-- <h2 class="text-center">List of scanned systems:</h2> -->
 		<p><p>
 
@@ -76,7 +85,7 @@
 					</tr>	
 					{% endfor %}
 				</table>
-				<button name="scan_all" value="scan_all" class="btn btn-info" type="submit">Rescan All</button>
+				<button name="scan_all" onclick="return confirmRescan();" value="scan_all" class="btn btn-info" type="submit">Rescan All</button>
 				{% csrf_token %}
 			</form>
 			{% else %}
