@@ -4,7 +4,7 @@ This project is a Django-based system for managing packages on CentOS and Ubuntu
 
 ## Motivation
 
-This project attempts to solve patch management issues for sysadmins and others using Linux systems in their estate; it's intended to be dropped on to an Ansible host as it uses passwordless sudo for its functions.
+This project attempts to aid sysadmins with patch management issues when using Linux systems in their estate; it's intended to be dropped on to an Ansible host as it uses passwordless sudo for its functions.
 
 ## Prerequisites
 
