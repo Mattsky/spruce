@@ -17,10 +17,12 @@ This project attempts to aid sysadmins with patch management issues when using L
 
 ## Installation
 
-Clone this repo to a directory, edit the settings.py file to reflect your database setup, then run the following from the directory *using python 3*:
+Clone this repo to a directory, edit the settings.py file to reflect your database setup, check the SSH key settings in views.py (needs cleaning up, assumes your key is at ~/.ssh/id_rsa) then run the following from the directory *using python 3*:
 
 `python manage.py makemigrations`
+
 `python manage.py migrate`
+
 `python manage.py runserver 0.0.0.0:8000`
 
 Access the index page at <webserver address>:8000/spruce .
