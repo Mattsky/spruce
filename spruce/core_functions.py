@@ -19,7 +19,6 @@
 from spruce.models import UpdateablePackageList, InstalledPackageList, HeldPackageList, Hosts, HostInfo
 from django.db import connection, transaction
 from spruce.ubuntu_functions import *
-from spruce.sql_functions import *
 from spruce.centos7_functions import *
 from django.conf import settings
 from django.core.files import File
@@ -270,8 +269,6 @@ def rollback_update(transact_id, TEST_ADDR, TEST_USER, keyfile):
 def multi_system_scan(system_list, TEST_USER, keyfile):
     
     try:
-        print("LEELOO DALLAS MULTISCAN")
-        print(system_list)
         plist = []
         # Delete existing info otherwise scans hang. Not efficient - needs looking in to. Maybe search existing hosts
         # in db and remove from list if found, then pass final list into multiprocessing call below?
@@ -293,13 +290,10 @@ def multi_system_scan(system_list, TEST_USER, keyfile):
 
 def multi_system_rescan(system_list, TEST_USER, keyfile):
     
-    print("MULTI RESCAN")
-    print(system_list)
     try:
         plist = []
         
         for x in system_list:
-            print(x)
             delete_info(x[0])
 
         for i in range(0, len(system_list)):

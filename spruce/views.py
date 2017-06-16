@@ -25,7 +25,6 @@ from django.db import connection
 from django.contrib import messages
 from spruce.ubuntu_functions import *
 from spruce.core_functions import *
-from spruce.sql_functions import *
 from spruce.centos7_functions import *
 from spruce.subfunctions import *
 import paramiko
@@ -70,8 +69,6 @@ def index(request):
             scan_address = target_address.split(':')[0]
             scan_port_temp = target_address.split(':')[1]
             scan_port = scan_port_temp.split('}')[0]
-            print(scan_address)
-            print(scan_port)
             
             rescan(scan_address, scan_port, TEST_USER, KEYFILE)
             list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
@@ -117,10 +114,7 @@ def index(request):
             list_of_ports = Hosts.objects.values_list('hostport', flat=True)
             for x in range(0, len(list_of_addresses)):
                 #list_of_hosts.append([ list_of_addresses[x] , list_of_ports[x] ])
-                print(list_of_addresses[x])
-                print(list_of_ports[x])
                 list_of_scan_targets.append([list_of_addresses[x], list_of_ports[x]])
-            print(list_of_scan_targets)
 
             multi_system_rescan(list_of_scan_targets, TEST_USER, KEYFILE)
 
@@ -201,8 +195,6 @@ def installed(request):
         if request.method == 'POST':
             packages_to_lock = request.POST.getlist('package')
             TEST_ADDR = syshost
-            for x in packages_to_lock:
-                print(x)
             hold_packages(host_id, packages_to_lock, TEST_ADDR, TEST_USER, KEYFILE)
 
         return render(request,'spruce/installed.html',context=packageList)
@@ -273,24 +265,17 @@ def upload_file(request):
                 if '[' not in teststring:
                     # Check line isn't totally empty
                     if teststring !='\r\n':
-                        print(teststring)        
-                        #host_address=line.decode("utf-8").split('=')[1]
                         if "host" in teststring:
                             ip_address_temp = re.search(r'ansible_host=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', teststring)
                             ip_address = ip_address_temp.group(1)
                         
                         if "port" in teststring:
-                            print("YAY")
                             connect_port_temp = re.search(r'ansible_port=(\d+)', teststring)
                             connect_port = connect_port_temp.group(1)
-                            print("PORT FOUND IN FILE")
-                            print(connect_port)
                         else:
                             connect_port=22
-                            print(connect_port)
                         
                         system_list.append([ip_address, str(connect_port)])
-            print(system_list)
 
             
             multi_system_scan(system_list, TEST_USER, KEYFILE)

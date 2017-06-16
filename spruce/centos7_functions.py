@@ -100,19 +100,14 @@ def centos7_get_locked_packages(ssh):
 def centos7_lock_packages(ssh, packagelist):
     
     try:
-        print("HELLO")
         log_dir = settings.LOG_DIR
-        print("LOGDIR SET")
         package_list_string = ""
         host_name = get_hostname(ssh)
         #Strip whitespace from end of hostname
         host_name = host_name.rstrip()
         # Convert hostname from bytes to usable string
         host_name = host_name.decode("utf-8")
-        print(host_name)
-        print(type(packagelist))
         package_list_string = ""
-        print(packagelist)
         
         if isinstance(packagelist, list):
             for x in packagelist:
@@ -186,7 +181,6 @@ def centos7_update_packages(ssh, packagelist):
             exit_status = stdout.channel.recv_exit_status()
 
             action_type = "update"
-            print(action_type)
             log_write(packagelist, host_name, action_type)
 
         elif isinstance(packagelist, str):

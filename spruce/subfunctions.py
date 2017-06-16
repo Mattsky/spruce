@@ -29,12 +29,8 @@ def log_write(packagelist, host_name, action_type):
         if isinstance(packagelist, list):
 
             timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
-            print(log_dir)
-            print(host_name)
-            print(timestamp)
             
             logfile_target = os.path.join(log_dir,host_name + '_' + action_type + '-' + timestamp + '.txt')
-            print(logfile_target)
             logfile = open(logfile_target, 'w')
             if action_type=="update":
                 logfile.write("The below packages were updated:\n")
@@ -44,19 +40,13 @@ def log_write(packagelist, host_name, action_type):
                 logfile.write("The below packages were locked:\n")
 
             for item in packagelist:
-                print(item)
                 logfile.write("%s\n" % item)
             logfile.close()
 
         elif isinstance(packagelist, str):
 
             timestamp = '{:%Y-%m-%d_%H%M%S}'.format(datetime.datetime.now())
-            print(log_dir)
-            print(type(host_name))
-            print(str(host_name))
-            print(timestamp)
             logfile_target = os.path.join(log_dir,host_name + '_' + action_type + '-' + timestamp + '.txt')
-            print(logfile_target)
             logfile = open(logfile_target, 'w')
             if action_type=="update":
                 logfile.write("The below packages were updated:\n")

@@ -139,13 +139,10 @@ def ubuntu_unhold_packages(ssh, packagelist):
         # Convert hostname from bytes to usable string
         host_name = host_name.decode("utf-8")
         package_list_string = ""
-        print(type(packagelist))
         if isinstance(packagelist, list):
-            print("UBUNTU UNHOLD LIST")
             for x in packagelist:
                 normal_package_name = x.split('/')[0]
                 package_list_string = package_list_string + normal_package_name + ' '
-            print("PACKAGE LIST: "+package_list_string)
             stdin, stdout, stderr = ssh.exec_command('sudo apt-mark unhold ' + package_list_string)
             exit_status = stdout.channel.recv_exit_status()
 
@@ -153,7 +150,6 @@ def ubuntu_unhold_packages(ssh, packagelist):
             log_write(packagelist, host_name, action_type)
 
         elif isinstance(packagelist, str):
-            print("UBUNTU UNHOLD STRING")
             stdin, stdout, stderr = ssh.exec_command('sudo apt-mark unhold ' + packagelist)
             exit_status = stdout.channel.recv_exit_status()
 
@@ -173,17 +169,12 @@ def ubuntu_apply_package_updates(ssh, packagelist):
         host_name = host_name.rstrip()
         # Convert hostname from bytes to usable string
         host_name = host_name.decode("utf-8")
-        print(type(packagelist))
         complete_packagelist = ""
         final_packagelist = []
         if isinstance(packagelist, list):
-            print(packagelist)
             for x in packagelist:
-                print(x)
-                print('package name: ' + x)
                 # Add space for building total package list ("packagename " - "package1package2" will break it)
                 complete_packagelist = complete_packagelist + (x + ' ')
-            print("Installing: " + complete_packagelist)
             stdin, stdout, stderr = ssh.exec_command('sudo apt-get -y install --only-upgrade ' + complete_packagelist)
             stdout = stdout.readlines()
             action_type = "update"
@@ -218,7 +209,6 @@ def ubuntu_list_package_updates(ssh, date):
                     packages = packages + ' '
                     total_package_list = total_package_list + packages
 
-        print(total_package_list)
         print("SUCCESS")
     except:
         print("FAILURE")
@@ -229,10 +219,6 @@ def ubuntu_install_specific_version_package(ssh, package, version):
         stdin, stdout, stderr = ssh.exec_command('sudo apt-get -y install ' + package + '=' + version)
         stdout = stdout.readlines()
         stderr = stderr.readlines()
-        for line in stdout:
-            print(line)
-        for line in stderr:
-            print(line)
 
         log_write(package, host_name, action_type)
 
@@ -265,12 +251,8 @@ def ubuntu_roll_back_update(ssh, transact_id):
     try:
         update_history_list = ubuntu_get_update_history(ssh)
         target_update = update_history_list[int(transact_id)]
-        print(target_update[1])
-        print(target_update[2])
         pkgname = target_update[1].split(":")[0]
-        print(pkgname)
         commandstring = 'sudo apt-get -y --allow-downgrades -o Dpkg::Options::="--force-confold" --force-yes install ' + pkgname + '=' + target_update[2]
-        print(commandstring)
         stdin, stdout, stderr = ssh.exec_command('sudo apt-get -y --allow-downgrades -o Dpkg::Options::="--force-confold" --force-yes install ' + pkgname + '=' + target_update[2])
         exit_status = stdout.channel.recv_exit_status()
         output = stdout.read()
