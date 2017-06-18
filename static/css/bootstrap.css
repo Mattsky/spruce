@@ -9412,4 +9412,5 @@ input[type="file"] {
 .header-fixed > thead > tr > th {
     width: 25%;
     float: left;
+    height: 70px;
 }
