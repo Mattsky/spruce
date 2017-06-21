@@ -9,11 +9,13 @@ This project attempts to aid sysadmins with patch management issues when using L
 ## Prerequisites
 
 - A MySQL server with a database created and a user / pass set (other backends may work if you wish to try but are untested - see https://docs.djangoproject.com/en/1.11/ref/settings/)
+- libmysqlclient-dev and python-dev packages (Ubuntu)
 - Python3+ (It's 2017, why are we still using 2.7?)
 - Paramiko (pip3 install paramiko, http://www.paramiko.org/)
 - mysqlclient (pip3 install mysqlclient, https://github.com/PyMySQL/mysqlclient-python)
 - Django 1.10+ (pip3 install django, https://www.djangoproject.com/)
 - Passwordless sudo on the servers to be managed 
+
 
 ## Installation
 
