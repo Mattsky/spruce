@@ -9,15 +9,17 @@ This project attempts to aid sysadmins with patch management issues when using L
 ## Prerequisites
 
 - A MySQL server with a database created and a user / pass set (other backends may work if you wish to try but are untested - see https://docs.djangoproject.com/en/1.11/ref/settings/)
+- libmysqlclient-dev and python-dev packages (Ubuntu)
 - Python3+ (It's 2017, why are we still using 2.7?)
 - Paramiko (pip3 install paramiko, http://www.paramiko.org/)
 - mysqlclient (pip3 install mysqlclient, https://github.com/PyMySQL/mysqlclient-python)
 - Django 1.10+ (pip3 install django, https://www.djangoproject.com/)
 - Passwordless sudo on the servers to be managed 
 
+
 ## Installation
 
-Clone this repo to a directory, edit the settings.py file to reflect your database setup, check the SSH key settings in views.py (needs cleaning up, assumes your key is at ~/.ssh/id_rsa) then run the following from the directory *using python 3*:
+Clone this repo to a directory, edit the master_project/settings.py file to reflect your database setup, HOMEDIR, KEYFILE (SSH key settings) and ALLOWED_HOST settings then run the following from the directory *using python 3*:
 
 `python manage.py makemigrations`
 
