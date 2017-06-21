@@ -36,11 +36,12 @@ TEST_USER = settings.TEST_USER
 HOMEDIR = settings.HOMEDIR
 KEYFILE = settings.KEYFILE
 
+ssh_keyfile = Path(KEYFILE)
 # Create your views here.
 
 def index(request):
     
-    ssh_keyfile = Path(KEYFILE)
+    
     if ssh_keyfile.is_file():
 
         list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
@@ -209,28 +210,34 @@ def installed(request):
 
 def scan(request):
 
-    try:
+    if ssh_keyfile.is_file():
 
-        if request.method == "POST":
-            if 'address' in request.POST.keys() and request.POST['address']:
-                if 'sshport' not in request.POST:
-                    scan_port = '22'
-                else:
-                    scan_port = request.POST['sshport']
-                scan_address = request.POST['address']
-                rescan(scan_address, scan_port, TEST_USER, KEYFILE)
-                messages.success(request, 'Scan successful - details added.')
-                return render(request, 'spruce/scan.html')
+        try:
 
-            
-        return render(request,'spruce/scan.html')
+            if request.method == "POST":
+                if 'address' in request.POST.keys() and request.POST['address']:
+                    if 'sshport' not in request.POST:
+                        scan_port = '22'
+                    else:
+                        scan_port = request.POST['sshport']
+                    scan_address = request.POST['address']
+                    rescan(scan_address, scan_port, TEST_USER, KEYFILE)
+                    messages.success(request, 'Scan successful - details added.')
+                    return render(request, 'spruce/scan.html')
 
-    except OSError as e:
-        messages.error(request, 'The remote system could not be contacted.')
-        return render(request,'spruce/scan.html')
-    except NoValidConnectionsError as e:
-        messages.error(request, e)
-        return render(request,'spruce/scan.html')
+                
+            return render(request,'spruce/scan.html')
+
+        except OSError as e:
+            messages.error(request, 'The remote system could not be contacted.')
+            return render(request,'spruce/scan.html')
+        except NoValidConnectionsError as e:
+            messages.error(request, e)
+            return render(request,'spruce/scan.html')
+
+    else:
+
+        return render(request,'spruce/disabled.html')
 
 def update_history(request):
 
@@ -255,35 +262,41 @@ def update_history(request):
 
 
 def upload_file(request):
+
+    if ssh_keyfile.is_file():
     
-    try:
-        if request.method == "POST":
-            system_list = []
-            f = request.FILES['hostFile'] # Grab uploaded file for parsing
-            for line in f:
-                teststring = line.decode("utf-8")
+        try:
+            if request.method == "POST":
+                system_list = []
+                f = request.FILES['hostFile'] # Grab uploaded file for parsing
+                for line in f:
+                    teststring = line.decode("utf-8")
 
-                # Convert bytes literal to string so we can breathe easier..
-                # Check line isn't a section header
-                if '[' not in teststring:
-                    # Check line isn't totally empty
-                    if teststring !='\r\n':
-                        if "host" in teststring:
-                            ip_address_temp = re.search(r'ansible_host=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', teststring)
-                            ip_address = ip_address_temp.group(1)
-                        
-                        if "port" in teststring:
-                            connect_port_temp = re.search(r'ansible_port=(\d+)', teststring)
-                            connect_port = connect_port_temp.group(1)
-                        else:
-                            connect_port=22
-                        
-                        system_list.append([ip_address, str(connect_port)])
+                    # Convert bytes literal to string so we can breathe easier..
+                    # Check line isn't a section header
+                    if '[' not in teststring:
+                        # Check line isn't totally empty
+                        if teststring !='\r\n':
+                            if "host" in teststring:
+                                ip_address_temp = re.search(r'ansible_host=(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', teststring)
+                                ip_address = ip_address_temp.group(1)
+                            
+                            if "port" in teststring:
+                                connect_port_temp = re.search(r'ansible_port=(\d+)', teststring)
+                                connect_port = connect_port_temp.group(1)
+                            else:
+                                connect_port=22
+                            
+                            system_list.append([ip_address, str(connect_port)])
 
-            
-            multi_system_scan(system_list, TEST_USER, KEYFILE)
-            messages.success(request, 'All systems were scanned. Please check the index.')
-        return render(request, 'spruce/upload_inventory.html')
-    except:
-        messages.error(request, 'An error occurred. Please try again.')
-        return render(request, 'spruce/upload_inventory.html')
+                
+                multi_system_scan(system_list, TEST_USER, KEYFILE)
+                messages.success(request, 'All systems were scanned. Please check the index.')
+            return render(request, 'spruce/upload_inventory.html')
+        except:
+            messages.error(request, 'An error occurred. Please try again.')
+            return render(request, 'spruce/upload_inventory.html')
+
+    else:
+
+        return render(request,'spruce/disabled.html')
