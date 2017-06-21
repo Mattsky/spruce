@@ -27,6 +27,7 @@ from spruce.ubuntu_functions import *
 from spruce.core_functions import *
 from spruce.centos7_functions import *
 from spruce.subfunctions import *
+from pathlib import Path
 import paramiko
 import re, time, datetime
 #from django.views.generic.base import TemplateView
@@ -39,95 +40,103 @@ KEYFILE = settings.KEYFILE
 
 def index(request):
     
-    list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
-    
-    new_host_list = []
-    
-    for x in list_of_hosts:
-        host_id = Hosts.objects.only('id').get(hostaddr=x)
-        host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
+    ssh_keyfile = Path(KEYFILE)
+    if ssh_keyfile.is_file():
+
+        list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
         
-        host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
+        new_host_list = []
         
-        os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
-        os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
-
-        new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
-
-    
-    host_list = {'hosts':new_host_list} 
-
-    if request.method == "POST":
-        if 'address' in request.POST.keys() and request.POST['address']:
-            target_address = request.POST['address']
-            scan_address = target_address.split(':')[0]
-            scan_port_temp = target_address.split(':')[1]
-            scan_port = scan_port_temp.split('}')[0]
+        for x in list_of_hosts:
+            host_id = Hosts.objects.only('id').get(hostaddr=x)
+            host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
             
-            rescan(scan_address, scan_port, TEST_USER, KEYFILE)
-            list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
-    
-            new_host_list = []
+            host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
+            
+            os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
+            os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
 
-            for x in list_of_hosts:
-                host_id = Hosts.objects.only('id').get(hostaddr=x)
-                host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
-                host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
-                os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
-                os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
+            new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
 
-                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
-
-            host_list = {'hosts':new_host_list} 
-            return render(request, 'spruce/index.html', context=host_list)
-
-        if 'delete' in request.POST.keys() and request.POST['delete']:
-            scan_address = request.POST['delete']
         
-            delete_info(scan_address)
-            list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
-    
-            new_host_list = []
+        host_list = {'hosts':new_host_list} 
+
+        if request.method == "POST":
+            if 'address' in request.POST.keys() and request.POST['address']:
+                target_address = request.POST['address']
+                scan_address = target_address.split(':')[0]
+                scan_port_temp = target_address.split(':')[1]
+                scan_port = scan_port_temp.split('}')[0]
+                
+                rescan(scan_address, scan_port, TEST_USER, KEYFILE)
+                list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
+        
+                new_host_list = []
+
+                for x in list_of_hosts:
+                    host_id = Hosts.objects.only('id').get(hostaddr=x)
+                    host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
+                    host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
+                    os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
+                    os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
+
+                    new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
+
+                host_list = {'hosts':new_host_list} 
+                return render(request, 'spruce/index.html', context=host_list)
+
+            if 'delete' in request.POST.keys() and request.POST['delete']:
+                scan_address = request.POST['delete']
             
-            for x in list_of_hosts:
-                host_id = Hosts.objects.only('id').get(hostaddr=x)
-                host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
-                host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
-                os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
-                os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
+                delete_info(scan_address)
+                list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
+        
+                new_host_list = []
+                
+                for x in list_of_hosts:
+                    host_id = Hosts.objects.only('id').get(hostaddr=x)
+                    host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
+                    host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
+                    os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
+                    os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
 
-                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
+                    new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
 
-            host_list = {'hosts':new_host_list} 
-            return render(request, 'spruce/index.html', context=host_list)
+                host_list = {'hosts':new_host_list} 
+                return render(request, 'spruce/index.html', context=host_list)
 
-        if 'scan_all' in request.POST.keys() and request.POST['scan_all']:
-            
-            list_of_scan_targets = []
-            list_of_addresses = Hosts.objects.values_list('hostaddr', flat=True)
-            list_of_ports = Hosts.objects.values_list('hostport', flat=True)
-            for x in range(0, len(list_of_addresses)):
-                #list_of_hosts.append([ list_of_addresses[x] , list_of_ports[x] ])
-                list_of_scan_targets.append([list_of_addresses[x], list_of_ports[x]])
+            if 'scan_all' in request.POST.keys() and request.POST['scan_all']:
+                
+                list_of_scan_targets = []
+                list_of_addresses = Hosts.objects.values_list('hostaddr', flat=True)
+                list_of_ports = Hosts.objects.values_list('hostport', flat=True)
+                for x in range(0, len(list_of_addresses)):
+                    #list_of_hosts.append([ list_of_addresses[x] , list_of_ports[x] ])
+                    list_of_scan_targets.append([list_of_addresses[x], list_of_ports[x]])
 
-            multi_system_rescan(list_of_scan_targets, TEST_USER, KEYFILE)
+                multi_system_rescan(list_of_scan_targets, TEST_USER, KEYFILE)
 
-            new_host_list = []
-            
-            for x in list_of_hosts:
-                host_id = Hosts.objects.only('id').get(hostaddr=x)
-                host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
-                host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
-                os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
-                os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
+                new_host_list = []
+                
+                for x in list_of_hosts:
+                    host_id = Hosts.objects.only('id').get(hostaddr=x)
+                    host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
+                    host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
+                    os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
+                    os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
 
-                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
+                    new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
 
-            host_list = {'hosts':new_host_list} 
-            return render(request, 'spruce/index.html', context=host_list)
+                host_list = {'hosts':new_host_list} 
+                return render(request, 'spruce/index.html', context=host_list)
 
 
-    return render(request,'spruce/index.html',context=host_list)
+        return render(request,'spruce/index.html',context=host_list)
+
+    else:
+
+        return render(request,'spruce/disabled.html',context=host_list)
+
 
 def held(request):
     
