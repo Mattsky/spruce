@@ -135,7 +135,7 @@ def index(request):
 
     else:
 
-        return render(request,'spruce/disabled.html',context=host_list)
+        return render(request,'spruce/disabled.html')
 
 
 def held(request):
