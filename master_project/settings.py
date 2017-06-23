@@ -20,6 +20,8 @@ LOG_DIR = os.path.join(BASE_DIR, "logs")
 
 # Security settings
 
+LOGIN_URL = '/spruce/login'
+LOGIN_REDIRECT_URL = '/spruce'
 TEST_USER = 'matt'
 HOMEDIR = os.path.expanduser('~')
 KEYFILE = HOMEDIR + '/.ssh/id_rsa'
