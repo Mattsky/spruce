@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Spruce.  If not, see <http://www.gnu.org/licenses/>.
 
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.conf import settings
 import os
@@ -28,6 +29,7 @@ from spruce.core_functions import *
 from spruce.centos7_functions import *
 from spruce.subfunctions import *
 from pathlib import Path
+from stat import *
 import paramiko
 import re, time, datetime
 #from django.views.generic.base import TemplateView
@@ -37,11 +39,28 @@ HOMEDIR = settings.HOMEDIR
 KEYFILE = settings.KEYFILE
 
 ssh_keyfile = Path(KEYFILE)
+
 # Create your views here.
 
+@login_required
 def index(request):
+
+    keyfile_permissions = str(oct(os.stat(KEYFILE)[ST_MODE])[-3:])
+    process_owner = os.geteuid()
+    keyfile_owner = os.stat(KEYFILE)[ST_UID]
     
-    
+    print(keyfile_permissions)
+    if keyfile_permissions != "600":
+
+        print("Bad permissions")
+        messages.error(request, 'The SSH keyfile permissions are wrong. Please check them then return to the index.')
+        return render(request,'spruce/disabled.html')
+
+    if process_owner != keyfile_owner:
+
+        messages.error(request, 'The Django process does not have access to the keyfile. Please run it as the correct user, then return to the index.')
+        return render(request,'spruce/disabled.html')
+
     if ssh_keyfile.is_file():
 
         list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
@@ -136,9 +155,10 @@ def index(request):
 
     else:
 
+        messages.error(request, 'The SSH keyfile was not found. Please check it exists then return to the index.')
         return render(request,'spruce/disabled.html')
 
-
+@login_required
 def held(request):
     
     try:
@@ -162,7 +182,7 @@ def held(request):
         messages.error(request, 'That host does not exist (did you try changing the URL manually?)')
         return redirect('index')
 
-
+@login_required
 def updates(request):
 
     try:
@@ -186,6 +206,7 @@ def updates(request):
         messages.error(request, 'That host does not exist (did you try changing the URL manually?)')
         return redirect('index')
 
+@login_required
 def installed(request):
 
     try:
@@ -208,7 +229,24 @@ def installed(request):
         messages.error(request, 'That host does not exist (did you try changing the URL manually?)')
         return redirect('index')
 
+@login_required
 def scan(request):
+
+    keyfile_permissions = str(oct(os.stat(KEYFILE)[ST_MODE])[-3:])
+    process_owner = os.geteuid()
+    keyfile_owner = os.stat(KEYFILE)[ST_UID]
+    
+    print(keyfile_permissions)
+    if keyfile_permissions != "600":
+
+        print("Bad permissions")
+        messages.error(request, 'The SSH keyfile permissions are wrong. Please check them then return to the index.')
+        return render(request,'spruce/disabled.html')
+
+    if process_owner != keyfile_owner:
+
+        messages.error(request, 'The Django process does not have access to the keyfile. Please run it as the correct user, then return to the index.')
+        return render(request,'spruce/disabled.html')
 
     if ssh_keyfile.is_file():
 
@@ -239,6 +277,7 @@ def scan(request):
 
         return render(request,'spruce/disabled.html')
 
+@login_required
 def update_history(request):
 
     try:
@@ -260,8 +299,24 @@ def update_history(request):
     except:
         print("OHNOES")
 
-
+@login_required
 def upload_file(request):
+
+    keyfile_permissions = str(oct(os.stat(KEYFILE)[ST_MODE])[-3:])
+    process_owner = os.geteuid()
+    keyfile_owner = os.stat(KEYFILE)[ST_UID]
+    
+    print(keyfile_permissions)
+    if keyfile_permissions != "600":
+
+        print("Bad permissions")
+        messages.error(request, 'The SSH keyfile permissions are wrong. Please check them then return to the index.')
+        return render(request,'spruce/disabled.html')
+
+    if process_owner != keyfile_owner:
+
+        messages.error(request, 'The Django process does not have access to the keyfile. Please run it as the correct user, then return to the index.')
+        return render(request,'spruce/disabled.html')
 
     if ssh_keyfile.is_file():
     

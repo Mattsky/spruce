@@ -25,9 +25,11 @@ Clone this repo to a directory, edit the master_project/settings.py file to refl
 
 `python manage.py migrate`
 
+`python manage.py createsuperuser`
+
 `python manage.py runserver 0.0.0.0:8000`
 
-Access the index page at <webserver address>:8000/spruce .
+Access the index page at <webserver address>:8000/spruce and log in using the new superuser account. You can manage users at <webserver address>:8000/admin
 
 ## Contributors
 
