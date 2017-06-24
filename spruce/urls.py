@@ -23,7 +23,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
-    url(r'^login/$', auth_views.login, {'template_name': 'spruce/login.html'}, name='login'),
+    url(r'login$', auth_views.login, {'template_name': 'spruce/login.html'}, name='login'),
     url(r'^logout/$', auth_views.logout, {'template_name': 'spruce/login.html'}, name='logout'),
     url(r'^held/$', views.held, name='held'),
     url(r'^updates/$', views.updates, name='updates'),
