@@ -22,7 +22,7 @@ LOG_DIR = os.path.join(BASE_DIR, "logs")
 
 LOGIN_URL = '/spruce/login'
 LOGIN_REDIRECT_URL = '/spruce'
-TEST_USER = 'matt'
+TEST_USER = ''
 HOMEDIR = os.path.expanduser('~')
 KEYFILE = HOMEDIR + '/.ssh/id_rsa'
 
@@ -35,7 +35,7 @@ SECRET_KEY = '@nm8b_-zfp($k(z7y*2o$mamm@ux6&s+$4n)$ujv2qenrwm0t7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.26', '172.19.8.20', '192.168.0.18', 'localhost']
+ALLOWED_HOSTS = ['localhost']
 
 
 # Application definition
@@ -87,10 +87,10 @@ WSGI_APPLICATION = 'master_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'testdb',
-        'USER': 'matt',
-        'PASSWORD': 'password',
-        'HOST': '192.168.0.22',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
         'PORT': '3306', 
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'", 
