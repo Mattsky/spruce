@@ -34,7 +34,7 @@ import paramiko
 import re, time, datetime
 #from django.views.generic.base import TemplateView
 
-TEST_USER = settings.TEST_USER
+AUTH_USER = settings.AUTH_USER
 HOMEDIR = settings.HOMEDIR
 KEYFILE = settings.KEYFILE
 
@@ -88,7 +88,7 @@ def index(request):
                 scan_port_temp = target_address.split(':')[1]
                 scan_port = scan_port_temp.split('}')[0]
                 
-                rescan(scan_address, scan_port, TEST_USER, KEYFILE)
+                rescan(scan_address, scan_port, AUTH_USER, KEYFILE)
                 list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
         
                 new_host_list = []
@@ -134,7 +134,7 @@ def index(request):
                     #list_of_hosts.append([ list_of_addresses[x] , list_of_ports[x] ])
                     list_of_scan_targets.append([list_of_addresses[x], list_of_ports[x]])
 
-                multi_system_rescan(list_of_scan_targets, TEST_USER, KEYFILE)
+                multi_system_rescan(list_of_scan_targets, AUTH_USER, KEYFILE)
 
                 new_host_list = []
                 
@@ -173,7 +173,7 @@ def held(request):
             packages_to_unhold = request.POST.getlist('package')
             TEST_ADDR = syshost
             
-            unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER, KEYFILE)
+            unhold_packages(host_id, packages_to_unhold, TEST_ADDR, AUTH_USER, KEYFILE)
 
         return render(request,'spruce/held.html',context=packageList)
 
@@ -197,7 +197,7 @@ def updates(request):
             packages_to_update = request.POST.getlist('package')
             TEST_ADDR = syshost
             
-            update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER, KEYFILE)
+            update_packages(host_id, packages_to_update, TEST_ADDR, AUTH_USER, KEYFILE)
 
         return render(request,'spruce/updates.html',context=updateList)
 
@@ -220,7 +220,7 @@ def installed(request):
         if request.method == 'POST':
             packages_to_lock = request.POST.getlist('package')
             TEST_ADDR = syshost
-            hold_packages(host_id, packages_to_lock, TEST_ADDR, TEST_USER, KEYFILE)
+            hold_packages(host_id, packages_to_lock, TEST_ADDR, AUTH_USER, KEYFILE)
 
         return render(request,'spruce/installed.html',context=packageList)
 
@@ -259,7 +259,7 @@ def scan(request):
                     else:
                         scan_port = request.POST['sshport']
                     scan_address = request.POST['address']
-                    rescan(scan_address, scan_port, TEST_USER, KEYFILE)
+                    rescan(scan_address, scan_port, AUTH_USER, KEYFILE)
                     messages.success(request, 'Scan successful - details added.')
                     return render(request, 'spruce/scan.html')
 
@@ -283,16 +283,16 @@ def update_history(request):
     try:
 
         target_address = request.GET['hostaddr']
-        output = get_update_history(target_address, TEST_USER, KEYFILE)
+        output = get_update_history(target_address, AUTH_USER, KEYFILE)
         if request.method == "POST":
             target_address = request.GET['hostaddr']
-            output = get_update_history(target_address, TEST_USER, KEYFILE)
+            output = get_update_history(target_address, AUTH_USER, KEYFILE)
             if 'input_id' in request.POST.keys() and request.POST['input_id']:
                 transact_id = request.POST['input_id']
                 
-                status_message = rollback_update(transact_id, target_address, TEST_USER, KEYFILE)
+                status_message = rollback_update(transact_id, target_address, AUTH_USER, KEYFILE)
                 messages.info(request, status_message)
-                output = get_update_history(target_address, TEST_USER, KEYFILE)
+                output = get_update_history(target_address, AUTH_USER, KEYFILE)
 
         return render(request, 'spruce/history.html', {'output': output})
 
@@ -345,7 +345,7 @@ def upload_file(request):
                             system_list.append([ip_address, str(connect_port)])
 
                 
-                multi_system_scan(system_list, TEST_USER, KEYFILE)
+                multi_system_scan(system_list, AUTH_USER, KEYFILE)
                 messages.success(request, 'All systems were scanned. Please check the index.')
             return render(request, 'spruce/upload_inventory.html')
         except:

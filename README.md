@@ -46,7 +46,7 @@ When using the update rollback functionality, be aware that this depends on the 
 
 ## Installation
 
-Clone this repo to a directory, edit the master_project/settings.py file to reflect your database setup, HOMEDIR, KEYFILE (SSH key settings) and ALLOWED_HOST settings then run the following from the directory *using python 3*:
+Clone this repo to a directory, edit the master_project/settings.py file to reflect your database setup, AUTH_USER (SSH keyfile owner username), HOMEDIR, KEYFILE (SSH key settings) and ALLOWED_HOST settings then run the following from the directory *using python 3*:
 
 `python manage.py makemigrations`
 

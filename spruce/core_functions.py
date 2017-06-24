@@ -68,7 +68,7 @@ def get_hostname(ssh):
     except:
         print("ERROR")
 
-def rescan(scan_address, scan_port, TEST_USER, keyfile):
+def rescan(scan_address, scan_port, AUTH_USER, keyfile):
 
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -77,7 +77,7 @@ def rescan(scan_address, scan_port, TEST_USER, keyfile):
     Hosts.objects.filter(hostaddr=scan_address).delete()
     
 
-    ssh.connect(scan_address, port=int(scan_port), username=TEST_USER, key_filename=keyfile, timeout=10)
+    ssh.connect(scan_address, port=int(scan_port), username=AUTH_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
             
     if 'CentOS' in os_id[0]:
@@ -147,12 +147,12 @@ def rescan(scan_address, scan_port, TEST_USER, keyfile):
 
  
 
-def unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER, keyfile):
+def unhold_packages(host_id, packages_to_unhold, TEST_ADDR, AUTH_USER, keyfile):
     ssh = paramiko.SSHClient()
 
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
+    ssh.connect(TEST_ADDR, username=AUTH_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
         
@@ -167,13 +167,13 @@ def unhold_packages(host_id, packages_to_unhold, TEST_ADDR, TEST_USER, keyfile):
             HeldPackageList.objects.filter(host_addr=host_id).filter(package=x).delete()
         held_packages = centos7_get_locked_packages(ssh)
 
-def update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER, keyfile):
+def update_packages(host_id, packages_to_update, TEST_ADDR, AUTH_USER, keyfile):
     ssh = paramiko.SSHClient()
 
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
     host_address = Hosts.objects.only('hostaddr').get(hostaddr=host_id)
-    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
+    ssh.connect(TEST_ADDR, username=AUTH_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
         ubuntu_apply_package_updates(ssh, packages_to_update)
@@ -196,12 +196,12 @@ def update_packages(host_id, packages_to_update, TEST_ADDR, TEST_USER, keyfile):
             update_package_entry = UpdateablePackageList(host_addr=host_address,package=x[0],currentver=current_package_version,newver=x[2])
             update_package_entry.save()
 
-def hold_packages(host_id, packages_to_hold, TEST_ADDR, TEST_USER, keyfile):
+def hold_packages(host_id, packages_to_hold, TEST_ADDR, AUTH_USER, keyfile):
     ssh = paramiko.SSHClient()
 
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     host_address = Hosts.objects.only('hostaddr').get(hostaddr=host_id)
-    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
+    ssh.connect(TEST_ADDR, username=AUTH_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'Ubuntu' in os_id[0]:
         ubuntu_hold_packages(ssh, packages_to_hold)
@@ -227,12 +227,12 @@ def delete_info(scan_address):
     # Delete existing info - this cascades down to all other linked tables (foreign keys)
     Hosts.objects.filter(hostaddr=scan_address).delete()
 
-def get_update_history(TEST_ADDR, TEST_USER, keyfile):
+def get_update_history(TEST_ADDR, AUTH_USER, keyfile):
     ssh = paramiko.SSHClient()
 
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
+    ssh.connect(TEST_ADDR, username=AUTH_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'CentOS' in os_id[0]:
         update_history = centos_get_update_history(ssh)
@@ -244,12 +244,12 @@ def get_update_history(TEST_ADDR, TEST_USER, keyfile):
 
 
 
-def rollback_update(transact_id, TEST_ADDR, TEST_USER, keyfile):
+def rollback_update(transact_id, TEST_ADDR, AUTH_USER, keyfile):
     ssh = paramiko.SSHClient()
 
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-    ssh.connect(TEST_ADDR, username=TEST_USER, key_filename=keyfile, timeout=10)
+    ssh.connect(TEST_ADDR, username=AUTH_USER, key_filename=keyfile, timeout=10)
     os_id = os_ident(ssh)
     if 'CentOS' in os_id[0]:
         try:
@@ -266,7 +266,7 @@ def rollback_update(transact_id, TEST_ADDR, TEST_USER, keyfile):
             return("UBUNTU ROLLBACK PROBLEM.")
 
 
-def multi_system_scan(system_list, TEST_USER, keyfile):
+def multi_system_scan(system_list, AUTH_USER, keyfile):
     
     try:
         plist = []
@@ -278,7 +278,7 @@ def multi_system_scan(system_list, TEST_USER, keyfile):
         for i in range(0, len(system_list)):
             scan_address = system_list[i][0]
             scan_port = system_list[i][1]
-            p = multiprocessing.Process(target = rescan(scan_address, scan_port, TEST_USER, keyfile))
+            p = multiprocessing.Process(target = rescan(scan_address, scan_port, AUTH_USER, keyfile))
             p.start()
             plist.append(p)
 
@@ -288,7 +288,7 @@ def multi_system_scan(system_list, TEST_USER, keyfile):
     except:
         print("Multiscan failed.")
 
-def multi_system_rescan(system_list, TEST_USER, keyfile):
+def multi_system_rescan(system_list, AUTH_USER, keyfile):
     
     try:
         plist = []
@@ -299,7 +299,7 @@ def multi_system_rescan(system_list, TEST_USER, keyfile):
         for i in range(0, len(system_list)):
             scan_address = system_list[i][0]
             scan_port = system_list[i][1]
-            p = multiprocessing.Process(target = rescan(scan_address, scan_port, TEST_USER, keyfile))
+            p = multiprocessing.Process(target = rescan(scan_address, scan_port, AUTH_USER, keyfile))
             p.start()
             plist.append(p)
 

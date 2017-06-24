@@ -22,7 +22,7 @@ LOG_DIR = os.path.join(BASE_DIR, "logs")
 
 LOGIN_URL = '/spruce/login'
 LOGIN_REDIRECT_URL = '/spruce'
-TEST_USER = ''
+AUTH_USER = ''
 HOMEDIR = os.path.expanduser('~')
 KEYFILE = HOMEDIR + '/.ssh/id_rsa'
 
