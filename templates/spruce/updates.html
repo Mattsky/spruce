@@ -1,8 +1,8 @@
-<!DOCTYPE html>
-{% load staticfiles %}
-<html>
-	<head>
-		<script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
+{% extends 'spruce/base.html' %}
+
+	{% block content %}
+	{% load staticfiles %}
+	<script src="{% static "js/jquery-3.2.1.min.js" %}"></script>
 		<script>
 		$(document).ready(function () {
     		$("#ckbCheckAll").click(function () {
@@ -16,28 +16,8 @@
     		});
 		}); 
 		</script>
-		<script type="text/javascript">
-                function ShowLoading(e) {
-                var div = document.createElement('div');
-                var img = document.createElement('img');
-                img.src = '{% static "images/loading_bar.gif" %}';
-                div.innerHTML = "Please Wait...<br />";
-                div.style.cssText = 'position: fixed; top: 50%; left: 40%; z-index: 5000; width: 422px; text-align: center; background: #FFFFFF; border: 1px solid #000';
-                div.appendChild(img);
-                document.body.appendChild(div);
-                return true;
-                // These 2 lines cancel form submission, so only use if needed.
-                //window.event.cancelBubble = true;
-                //e.stopPropagation();
-                }
-                </script>
 
-		<meta charset="utf-8">
-		<title>{{ request.GET.hostname }}: Available Updates</title>
-		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
-	</head>
-	<body>
-	{% include "spruce/navbar.html" %}
+
 	<div class="jumbotron">
 		<h1 class="text-center">{{ request.GET.hostname }}: Available Updates</h1>
 	</div>
@@ -79,5 +59,4 @@
 
 		</div>
 
-	</body>
-</html>
+	{% endblock %}
