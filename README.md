@@ -1,6 +1,6 @@
 # Spruce: helping you manage systems.
 
-<img src="http://ccrg.co.uk/spruce_logo.png" align="left" hspace="10" vspace="6">
+<img src="http://ccrg.co.uk/spruce_logo_small.png" align="left" hspace="10" vspace="6">
 
 Spruce is a Django-based application for managing packages on Linux systems. So far Ubuntu and CentOS are supported, with Debian and RHEL on the roadmap.
 
