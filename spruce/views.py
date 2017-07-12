@@ -64,7 +64,7 @@ def syscheck():
 @login_required
 def index(request):
 
-    check_result = syscheck(request)
+    check_result = syscheck()
     if check_result:
         messages.error(request, check_result)
         return render(request,'spruce/disabled.html')
@@ -165,7 +165,7 @@ def index(request):
 @login_required
 def held(request):
     
-    check_result = syscheck(request)
+    check_result = syscheck()
     if check_result:
         messages.error(request, check_result)
         return render(request,'spruce/disabled.html')
@@ -194,7 +194,7 @@ def held(request):
 @login_required
 def updates(request):
 
-    check_result = syscheck(request)
+    check_result = syscheck()
     if check_result:
         messages.error(request, check_result)
         return render(request,'spruce/disabled.html')
@@ -223,7 +223,7 @@ def updates(request):
 @login_required
 def installed(request):
 
-    check_result = syscheck(request)
+    check_result = syscheck()
     if check_result:
         messages.error(request, check_result)
         return render(request,'spruce/disabled.html')
@@ -251,7 +251,7 @@ def installed(request):
 @login_required
 def scan(request):
 
-    check_result = syscheck(request)
+    check_result = syscheck()
     if check_result:
         messages.error(request, check_result)
         return render(request,'spruce/disabled.html')
@@ -285,7 +285,7 @@ def scan(request):
 @login_required
 def update_history(request):
 
-    check_result = syscheck(request)
+    check_result = syscheck()
     if check_result:
         messages.error(request, check_result)
         return render(request,'spruce/disabled.html')
@@ -312,7 +312,7 @@ def update_history(request):
 @login_required
 def upload_file(request):
 
-    check_result = syscheck(request)
+    check_result = syscheck()
     if check_result:
         messages.error(request, check_result)
         return render(request,'spruce/disabled.html')
