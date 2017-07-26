@@ -63,6 +63,10 @@ From here you can scan a single system by entering the IP address and SSH port.
 
 Here you can upload an Ansible inventory file, and Spruce will attempt to contact all of the hosts defined therein and collect information in multithreaded fashion.
 
+### Gcloud (experimental)
+
+This option assumes gcloud is installed and configured on the system running Spruce. It will poll the active project for instance information and allow you to scan either the internal or external addresses and add the system information to the database. Assumes the configured SSH key has access to the systems, and that each system is running the SSH server on port 22.
+
 ## WARNINGS
 
 This project is still very much in development and things like debug mode settings, hardcoded security tokens etc. reflect that. Consider SSL termination and be sure to review the checklist here if you intend on using this in production before it's properly ready to do so: https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/

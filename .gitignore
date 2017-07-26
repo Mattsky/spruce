@@ -23,6 +23,7 @@ var/
 .installed.cfg
 *.egg
 logs/
+master_project/settings.py
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

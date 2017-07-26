@@ -30,5 +30,6 @@ urlpatterns = [
     url(r'^installed/$', views.installed, name='installed'),
     url(r'^scan/$', views.scan, name='scan'),
     url(r'^upload_file/$', views.upload_file, name='upload_file'),
+    url(r'^gcloud_scan/$', views.gcloud_scan, name='gcloud_scan'),
     url(r'^update_history/$', views.update_history, name='update_history'),
 ]

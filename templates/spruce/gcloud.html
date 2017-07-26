@@ -1,0 +1,54 @@
+{% extends 'spruce/base.html' %}
+
+	{% block content %}
+	{% load staticfiles %}
+	<div class="jumbotron">
+		<h1 class="text-center">System Index</h1>
+		{% if messages %}
+		{% for message in messages %}
+			{{ message }}
+		{% endfor %}
+		{% endif %}
+	</div>
+		<!-- <h2 class="text-center">List of scanned systems:</h2> -->
+		<p><p>
+
+		<!-- <div class="center_div text-center"> -->
+		<div>
+			{% if output %}		
+			<form method="POST" runat="server" onsubmit="ShowLoading()">
+				<table border=1>
+					<thead>
+						<th><p class="text-center">NAME</p></th>
+						<th><p class="text-center">ZONE</p></th>
+						<th><p class="text-center">MACHINE TYPE</p></th>
+						<th><p class="text-center">PREEMPTIBLE</p></th>
+						<th><p class="text-center">INTERNAL IP</p></th>
+						<th><p class="text-center">EXTERNAL IP</p></th>
+						<th><p class="text-center">STATUS</p></th>
+					</thead>
+					{% for line in output %}
+					<tr>
+						<td>{{ line.0 }}</td>
+						<td>{{ line.1 }}</td>
+						<td>{{ line.2 }}</td>
+						<td>{{ line.3 }}</td>
+						<td>{{ line.4 }}</td>
+						<td>{{ line.5 }}</td>
+						<td>{{ line.6 }}</td>
+					</tr>
+					{% endfor %}
+				</table>
+				<br><br>
+				<div class="text-center">
+				<button name="internal_scan" value="internal_scan" class="btn btn-info" type="submit">Scan using internal addresses</button>
+				<button name="external_scan" value="external_scan" class="btn btn-info" type="submit">Scan using external addresses</button>
+				</div>
+				{% csrf_token %}
+			</form>
+			{% else %}
+			<p>No access records found!</p>
+			{% endif %}
+
+		</div>
+	{% endblock %}

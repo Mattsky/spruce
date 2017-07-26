@@ -1,0 +1,15 @@
+{% extends 'spruce/base.html' %}
+
+	{% block content %}
+	{% load staticfiles %}
+	<div class="jumbotron">
+		<h1 class="text-center">Non-Fatal Issue Detected</h1>
+	</div>
+	<div class="text-center">
+		{% if messages %}
+		{% for message in messages %}
+			{{ message }}
+		{% endfor %}
+		{% endif %}
+	</div>
+	{% endblock %}

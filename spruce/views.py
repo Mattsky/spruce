@@ -31,7 +31,7 @@ from spruce.subfunctions import *
 from pathlib import Path
 from stat import *
 import paramiko
-import re, time, datetime
+import re, time, datetime, shutil, subprocess
 #from django.views.generic.base import TemplateView
 
 AUTH_USER = settings.AUTH_USER
@@ -308,6 +308,64 @@ def update_history(request):
 
     except:
         print("OHNOES")
+
+@login_required
+def gcloud_scan(request):
+
+    system_scan_list = []
+    converted_output = []
+
+    check_result = syscheck()
+    if check_result:
+        messages.error(request, check_result)
+        return render(request,'spruce/disabled.html')
+
+    gcloud_result = shutil.which("gcloud")
+    if not gcloud_result:
+        messages.error(request, "gcloud is not installed on this system.")
+        return render(request,'spruce/error.html')
+
+    try:
+
+        instance_info_command = "gcloud compute instances list"
+        instance_info_args = instance_info_command.split()
+        instance_info = subprocess.Popen(instance_info_args, stdout=subprocess.PIPE)
+        stdout, stderr = instance_info.communicate()
+        cmdoutput = stdout.decode("utf-8")
+        formatted_cmdoutput = cmdoutput.split('\n')
+        for line in formatted_cmdoutput:
+            line = line.split()
+            if len(line) > 0:
+                line.insert(3, "N/A")
+            # Below deals with custom machine types - we don't care about the hardware info at this time, so let's maintain a standard format
+            #['pds-1', 'us-central1-c', 'custom', 'N/A', '(1', 'vCPU,', '5.25', 'GiB)', '10.240.0.2', '104.198.171.137', 'RUNNING']
+            if len(line) > 8:
+                print(line)
+                line = line[:4] + line[8:]
+            if len(line) > 0:
+                converted_output.append(line)
+
+        # Get rid of header line
+        converted_output = converted_output[1:]
+        output = converted_output
+        if request.method == "POST":
+            if 'internal_scan' in request.POST.keys() and request.POST['internal_scan']:
+                print("INTERNAL")
+                for line in output:
+                    system_scan_list.append([line[4],"22"])
+                print(system_scan_list)
+                multi_system_rescan(system_scan_list, AUTH_USER, KEYFILE)
+            if 'external_scan' in request.POST.keys() and request.POST['external_scan']:
+                print("EXTERNAL")
+                for line in output:
+                    system_scan_list.append([line[5],"22"])
+                print(system_scan_list)
+                multi_system_rescan(system_scan_list, AUTH_USER, KEYFILE)
+        return render(request, 'spruce/gcloud.html', {'output': output})
+
+    except:
+        print("OHNOES")
+
 
 @login_required
 def upload_file(request):
