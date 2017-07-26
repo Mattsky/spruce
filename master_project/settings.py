@@ -18,6 +18,10 @@ TEMPLATE_DIR = os.path.join(BASE_DIR,"templates")
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
+
 # Security settings
 
 LOGIN_URL = '/spruce/login'
@@ -25,6 +29,7 @@ LOGIN_REDIRECT_URL = '/spruce'
 AUTH_USER = ''
 HOMEDIR = os.path.expanduser('~')
 KEYFILE = HOMEDIR + '/.ssh/id_rsa'
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
