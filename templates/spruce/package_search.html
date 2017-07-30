@@ -1,0 +1,55 @@
+{% extends 'spruce/base.html' %}
+
+	{% block content %}
+	{% load staticfiles %}
+	<div class="jumbotron">
+		<h1 class="text-center">Package Search</h1>
+	</div>
+	<div class="text-center">
+		{% if messages %}
+		{% for message in messages %}
+			{{ message }}
+		{% endfor %}
+		{% endif %}
+	<form method="POST" runat="server" onsubmit="ShowLoading()">
+					{% if messages %}
+						<div>
+						{% for message in messages %}
+							{{ message }}
+						{% endfor %}
+						</div>
+					{% endif %}
+					<p>Please enter the package name to search for.</p>
+					<input type="text" name="pkg_name" placeholder="Package name">
+					<button type="submit" class="btn btn-primary" value="Submit">Submit</button>
+					{% csrf_token %}
+					</form>
+					<div class="center_div text-center">
+				<hr>
+			{% if hosts %}
+				<table class="table table-bordered vertical-align">
+					<thead>
+						<th><p class="text-center">Host Name</p></th>
+						<th><p class="text-center">OS</p></th>
+						<th><p class="text-center">Version</p></th>
+						<th><p class="text-center">IP Address</p></th>
+						<th><p class="text-center">Package Name</p></th>
+						<th><p class="text-center">Package Version</p></th>
+					</thead>
+					{% for sysaddr in hosts %}
+					<tr>
+						<td>{{ sysaddr.1 }}</td>
+						<td><img src="{% static "images/" %}{{ sysaddr.2 }}.png" title="{{ sysaddr.2 }}"></td>
+						<td>{{ sysaddr.3 }}</td>
+						<td>{{ sysaddr.0 }}:{{ sysaddr.4 }}</td>
+						<td></td>
+						<td></td>
+					</tr>
+					{% endfor %}
+				</table>
+			{% else %}
+			<p>No records found.</p>
+			{% endif %}
+	</div>
+
+	{% endblock %}

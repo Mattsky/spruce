@@ -366,6 +366,15 @@ def gcloud_scan(request):
     except:
         print("OHNOES")
 
+@login_required
+def package_search(request):
+
+    check_result = syscheck()
+    if check_result:
+        messages.error(request, check_result)
+        return render(request,'spruce/disabled.html')
+
+    return render(request, 'spruce/package_search.html')
 
 @login_required
 def upload_file(request):
