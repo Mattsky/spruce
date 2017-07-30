@@ -4,6 +4,8 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Spruce v0.2</title>
 		<link rel="stylesheet" href="{% static "css/bootstrap.css" %}"/>
 		<script type="text/javascript">
@@ -23,26 +25,46 @@
 		</script>
 	</head>
 	<body>
-		<div class="navbar navbar-default navbar-static-top">
-	        <div class="container p-none">
-	            <div class="navbar-header">
-	                <a class="navbar-brand" href="{% url "index" %}"><img src="{% static "images/Spruce.png" %}" title="Spruce v0.2"></a>
-		                <span class="navigationSpace">
-	                <a href="{% url "index" %}">INDEX</a>
-		                <span class="navigationSpace">
-		            <a href="{% url "scan" %}">SCAN</a>
-	                    <span class="navigationSpace">
-	                <a href="{% url "upload_file" %}">UPLOAD</a>
-	                    <span class="navigationSpace">
-	                <a href="{% url "gcloud_scan" %}">GCLOUD</a>
-	                    <span class="navigationSpace">
-	                <a href="{% url "logout" %}">LOGOUT</a>
-	                    <span class="navigationSpace">
-	                
-	            </div>
-	        </div>
-	    </div>
-	    {% block content %}
+		<script type="text/javascript" src="{% static "js/jquery-3.2.1.min.js" %}"></script>
+        	<script type="text/javascript" src="{% static "js/bootstrap.js" %}"></script>
+
+		<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <!-- <a class="navbar-brand" href="{% url "index" %}"><img width="30px" height="30px" src="{% static "images/Spruce.png" %}"></a> -->
+      <a href="{% url "index" %}"><img width="50px" height="50px" src="{% static "images/Spruce.png" %}"></a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <!-- <li><a href="{% url "scan" %}">Scan</a></li>
+        <li><a href="#">Link</a></li> -->
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Scans<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url "scan" %}">Manual Scan</a></li>
+            <li><a href="{% url "upload_file" %}">Ansible Inventory</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="{% url "gcloud_scan" %}">Gcloud</a></li>
+          </ul>
+        </li>
+      </ul>
+      <!-- <ul class="nav navbar-nav navbar-right">
+        <li><a href="#">Link</a></li>
+      </ul> -->
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+	    	{% block content %}
 		{% endblock %}
 	</body>
 </html>
