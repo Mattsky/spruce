@@ -374,6 +374,27 @@ def package_search(request):
         messages.error(request, check_result)
         return render(request,'spruce/disabled.html')
 
+    #Hostname, OS, Version, IP, Package name, Package version
+    # SELECT spruce_hostinfo.host_name, spruce_hostinfo.os_name, spruce_hostinfo.os_version, spruce_hosts.hostaddr, spruce_installedpackagelist.package, spruce_installedpackagelist.currentver 
+    # FROM spruce_hostinfo
+    # INNER JOIN spruce_hosts ON spruce_hosts.id=spruce_hostinfo.host_addr_id
+    # INNER JOIN spruce_installedpackagelist ON spruce_installedpackagelist.host_addr_id=spruce_hosts.id
+    # WHERE spruce_installedpackagelist.package LIKE '%vim%';
+
+    if request.method == "POST":
+        print("POST!")
+        if 'pkg_name' in request.POST.keys() and request.POST['pkg_name']:
+            package = request.POST['pkg_name']
+            package = '%' + package + '%'
+            print("SEARCH LOOP")
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT spruce_hostinfo.host_name, spruce_hostinfo.os_name, spruce_hostinfo.os_version, spruce_hosts.hostaddr, spruce_installedpackagelist.package, spruce_installedpackagelist.currentver FROM spruce_hostinfo INNER JOIN spruce_hosts ON spruce_hosts.id=spruce_hostinfo.host_addr_id INNER JOIN spruce_installedpackagelist ON spruce_installedpackagelist.host_addr_id=spruce_hosts.id WHERE spruce_installedpackagelist.package LIKE %s ",[package])
+                pkginfo = cursor.fetchall()
+                print(pkginfo)
+
+                info_list = {'hosts':pkginfo}
+                return render(request, 'spruce/package_search.html', context=info_list)
+
     return render(request, 'spruce/package_search.html')
 
 @login_required

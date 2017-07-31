@@ -36,14 +36,14 @@
 						<th><p class="text-center">Package Name</p></th>
 						<th><p class="text-center">Package Version</p></th>
 					</thead>
-					{% for sysaddr in hosts %}
+					{% for pkginfo in hosts %}
 					<tr>
-						<td>{{ sysaddr.1 }}</td>
-						<td><img src="{% static "images/" %}{{ sysaddr.2 }}.png" title="{{ sysaddr.2 }}"></td>
-						<td>{{ sysaddr.3 }}</td>
-						<td>{{ sysaddr.0 }}:{{ sysaddr.4 }}</td>
-						<td></td>
-						<td></td>
+						<td>{{ pkginfo.0 }}</td>
+						<td><img src="{% static "images/" %}{{ pkginfo.1 }}.png" title="{{ pkginfo.1 }}"></td>
+						<td>{{ pkginfo.2 }}</td>
+						<td>{{ pkginfo.3 }}</td>
+						<td>{{ pkginfo.4 }}</td>
+						<td>{{ pkginfo.5 }}</td>
 					</tr>
 					{% endfor %}
 				</table>
