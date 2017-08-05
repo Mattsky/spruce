@@ -4,11 +4,6 @@
 	{% load staticfiles %}
 	<div class="jumbotron">
 		<h1 class="text-center">System Index</h1>
-		{% if messages %}
-		{% for message in messages %}
-			{{ message }}
-		{% endfor %}
-		{% endif %}
 	</div>
 	<script type="text/javascript">
 		function confirmRollback() {
@@ -32,6 +27,11 @@
 		<p><p>
 
 		<div class="center_div text-center">
+			{% if messages %}
+			{% for message in messages %}
+				{{ message }}
+			{% endfor %}
+			{% endif %}
 			{% if hosts %}
 			<form method="POST" runat="server" onsubmit="ShowLoading()">
 				<table class="table table-bordered vertical-align">

@@ -65,7 +65,7 @@ Here you can upload an Ansible inventory file, and Spruce will attempt to contac
 
 ### Gcloud (experimental)
 
-This option assumes gcloud is installed and configured on the system running Spruce. It will poll the active project for instance information and allow you to scan either the internal or external addresses and add the system information to the database. Assumes the configured SSH key has access to the systems, and that each system is running the SSH server on port 22.
+This scan option assumes gcloud is installed and configured on the system running Spruce. It will poll the active project for instance information and allow you to scan either the internal or external addresses and add the system information to the database. Assumes the configured SSH key has access to the systems, and that each system is running the SSH server on port 22.
 
 ## WARNINGS
 

@@ -96,22 +96,39 @@ def index(request):
             scan_port_temp = target_address.split(':')[1]
             scan_port = scan_port_temp.split('}')[0]
             
-            rescan(scan_address, scan_port, AUTH_USER, KEYFILE)
-            list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
-    
-            new_host_list = []
+            try:
+                rescan(scan_address, scan_port, AUTH_USER, KEYFILE)
+                list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
+        
+                new_host_list = []
 
-            for x in list_of_hosts:
-                host_id = Hosts.objects.only('id').get(hostaddr=x)
-                host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
-                host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
-                os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
-                os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
+                for x in list_of_hosts:
+                    host_id = Hosts.objects.only('id').get(hostaddr=x)
+                    host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
+                    host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
+                    os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
+                    os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
 
-                new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
+                    new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
 
-            host_list = {'hosts':new_host_list} 
-            return render(request, 'spruce/index.html', context=host_list)
+                host_list = {'hosts':new_host_list} 
+                return render(request, 'spruce/index.html', context=host_list)
+            except Exception as e:
+                list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
+        
+                new_host_list = []
+
+                for x in list_of_hosts:
+                    host_id = Hosts.objects.only('id').get(hostaddr=x)
+                    host_port = Hosts.objects.filter(hostaddr=x).values_list('hostport', flat=True)
+                    host_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('host_name', flat=True)
+                    os_name = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_name', flat=True)
+                    os_version = HostInfo.objects.filter(host_addr_id=host_id).values_list('os_version', flat=True)
+
+                    new_host_list.append([x, str(host_name[0]), str(os_name[0]), str(os_version[0]), str(host_port[0])]) 
+                host_list = {'hosts':new_host_list} 
+                messages.error(request, "WARNING: rescan failed! Error message: " + str(e))
+                return render(request, 'spruce/index.html', context=host_list)
 
         if 'delete' in request.POST.keys() and request.POST['delete']:
             scan_address = request.POST['delete']
@@ -273,12 +290,10 @@ def scan(request):
             
         return render(request,'spruce/scan.html')
 
-    except OSError as e:
+    except Exception as e:
         messages.error(request, 'The remote system could not be contacted.')
         return render(request,'spruce/scan.html')
-    except NoValidConnectionsError as e:
-        messages.error(request, e)
-        return render(request,'spruce/scan.html')
+    
 
  
 
