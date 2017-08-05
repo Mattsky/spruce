@@ -4,20 +4,23 @@
 	{% load staticfiles %}
 	<div class="jumbotron">
 		<h1 class="text-center">System Index</h1>
-		{% if messages %}
-		{% for message in messages %}
-			{{ message }}
-		{% endfor %}
-		{% endif %}
-	</div>
+
 		<!-- <h2 class="text-center">List of scanned systems:</h2> -->
 		<p><p>
-
+	</div>
 		<!-- <div class="center_div text-center"> -->
-		<div>
+			{% if messages %}
+			<div class="center_div text-center">
+			{% for message in messages %}
+				{{ message }}
+			{% endfor %}
+			</div>
+			<hr>
+			{% endif %}
+		<div class="center_div text-center">
 			{% if output %}		
 			<form method="POST" runat="server" onsubmit="ShowLoading()">
-				<table border=1>
+				<table class="table table-bordered vertical-align">
 					<thead>
 						<th><p class="text-center">NAME</p></th>
 						<th><p class="text-center">ZONE</p></th>

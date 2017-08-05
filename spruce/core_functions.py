@@ -306,5 +306,9 @@ def multi_system_rescan(system_list, AUTH_USER, keyfile):
         for p in plist:
             p.join() # Wait for all processes to finish
 
-    except:
+        return("Success: scan complete.")
+
+    except Exception as e:
         print("Multi rescan failed.")
+        print(e)
+        return("WARNING: scan failed. Reason: " + str(e))
