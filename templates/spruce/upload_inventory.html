@@ -15,7 +15,14 @@
 					{% if messages %}
 						<div>
 						{% for message in messages %}
-							{{ message }}
+								{{ message }}
+						{% endfor %}
+						</div>
+					{% endif %}
+					{% if result_list %}
+						<div>
+						{% for elem in result_list %}
+								{{ elem.0 }}<br>
 						{% endfor %}
 						</div>
 					{% endif %}

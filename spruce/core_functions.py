@@ -24,7 +24,7 @@ from django.conf import settings
 from django.core.files import File
 import paramiko
 import re, time, datetime
-import multiprocessing
+import multiprocessing, traceback
 
 def os_ident(ssh):
     OS = ''
@@ -68,20 +68,23 @@ def get_hostname(ssh):
     except:
         print("ERROR")
 
-def rescan(scan_address, scan_port, AUTH_USER, keyfile):
+def rescan(scan_address, scan_port, AUTH_USER, keyfile, queue):
 
-    ssh = paramiko.SSHClient()
-    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-
-    # Delete existing info prior to refresh and recreate, just in case
-    Hosts.objects.filter(hostaddr=scan_address).delete()
+    try:
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     
-
-    ssh.connect(scan_address, port=int(scan_port), username=AUTH_USER, key_filename=keyfile, timeout=10)
-    os_id = os_ident(ssh)
-            
-    if 'CentOS' in os_id[0]:
-        try:
+        # Delete existing info prior to refresh and recreate, just in case
+        Hosts.objects.filter(hostaddr=scan_address).delete()
+    
+        ssh.connect(scan_address, port=int(scan_port), username=AUTH_USER, key_filename=keyfile, timeout=10)
+        os_id = os_ident(ssh)
+        #host_name = get_hostname(ssh)
+        #host_name = host_name.rstrip()
+        
+                
+        if 'CentOS' in os_id[0]:
+                
             # Install required packages for functionality
             stdin, stdout, stderr = ssh.exec_command('sudo yum -y install yum-versionlock')
             exit_status = stdout.channel.recv_exit_status()
@@ -111,17 +114,16 @@ def rescan(scan_address, scan_port, AUTH_USER, keyfile):
                     if x[0] in z:
                         current_package_version = z[2]
                 centos_converted_update_list.append(UpdateablePackageList(host_addr=host_address,package=x[0],currentver=current_package_version,newver=x[2]))
-            UpdateablePackageList.objects.bulk_create(centos_converted_update_list)    
+            UpdateablePackageList.objects.bulk_create(centos_converted_update_list)
+            host_name = host_name.decode('utf-8')
+            queue.append([("SUCCESS: " + str(host_name) + " was scanned!")])
+    
+        if 'Ubuntu' in os_id[0]:
                 
-        except:
-            print("PROBLEM SCANNING CENTOS HOST!")
-
-    if 'Ubuntu' in os_id[0]:
-        try:
             host_entry = Hosts(hostaddr=scan_address, hostport=scan_port)
             host_entry.save()
             host_address = Hosts.objects.only('hostaddr').get(hostaddr=scan_address)
-            
+                
             host_name = get_hostname(ssh)
             #Strip whitespace from end of hostname
             host_name = host_name.rstrip()
@@ -142,9 +144,14 @@ def rescan(scan_address, scan_port, AUTH_USER, keyfile):
             for x in ubuntu_update_packages:
                 ubuntu_converted_updates_list.append(UpdateablePackageList(host_addr=host_address,package=x[0],currentver=x[1],newver=x[2]))
             UpdateablePackageList.objects.bulk_create(ubuntu_converted_updates_list)
-        except:
-            print("PROBLEM SCANNING UBUNTU HOST!")
+            host_name = host_name.decode('utf-8')
+            queue.append([("SUCCESS: " + str(host_name) + " was scanned!")])
 
+    except Exception as e:
+        #queue.put("WARNING: " + scan_address + " couldn\'t be scanned! Reason: " + str(e))
+        queue.append([("WARNING: " + scan_address + " couldn\'t be scanned! Reason: " + str(e))])
+        #print("Oops")
+        #print(str(e))
  
 
 def unhold_packages(host_id, packages_to_unhold, TEST_ADDR, AUTH_USER, keyfile):
@@ -269,7 +276,10 @@ def rollback_update(transact_id, TEST_ADDR, AUTH_USER, keyfile):
 def multi_system_scan(system_list, AUTH_USER, keyfile):
     
     try:
+        print("Multiscan loop")
         plist = []
+        result_list = []
+        queue1 = []
         # Delete existing info otherwise scans hang. Not efficient - needs looking in to. Maybe search existing hosts
         # in db and remove from list if found, then pass final list into multiprocessing call below?
         for x in system_list:
@@ -277,21 +287,29 @@ def multi_system_scan(system_list, AUTH_USER, keyfile):
 
         for i in range(0, len(system_list)):
             scan_address = system_list[i][0]
+            #print(scan_address)
             scan_port = system_list[i][1]
-            p = multiprocessing.Process(target = rescan(scan_address, scan_port, AUTH_USER, keyfile))
+            p = multiprocessing.Process(target = rescan(scan_address, scan_port, AUTH_USER, keyfile, queue1))
             p.start()
             plist.append(p)
+
 
         for p in plist:
             p.join() # Wait for all processes to finish
 
-    except:
+        #print(queue1)
+        return(queue1)
+
+    except Exception as e:
         print("Multiscan failed.")
+        print(str(e))
 
 def multi_system_rescan(system_list, AUTH_USER, keyfile):
     
     try:
         plist = []
+        result_list = []
+        queue1 = []
         
         for x in system_list:
             delete_info(x[0])
@@ -299,14 +317,16 @@ def multi_system_rescan(system_list, AUTH_USER, keyfile):
         for i in range(0, len(system_list)):
             scan_address = system_list[i][0]
             scan_port = system_list[i][1]
-            p = multiprocessing.Process(target = rescan(scan_address, scan_port, AUTH_USER, keyfile))
+            p = multiprocessing.Process(target = rescan(scan_address, scan_port, AUTH_USER, keyfile, queue1))
             p.start()
             plist.append(p)
 
         for p in plist:
             p.join() # Wait for all processes to finish
 
-        return("Success: scan complete.")
+        #print(queue1)
+        #return("Success: scan complete.")
+        return(queue1)
 
     except Exception as e:
         print("Multi rescan failed.")

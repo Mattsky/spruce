@@ -31,6 +31,7 @@ from spruce.subfunctions import *
 from pathlib import Path
 from stat import *
 import paramiko
+import multiprocessing
 import re, time, datetime, shutil, subprocess
 #from django.views.generic.base import TemplateView
 
@@ -63,6 +64,8 @@ def syscheck():
 
 @login_required
 def index(request):
+
+    queue1 = multiprocessing.Queue()
 
     check_result = syscheck()
     if check_result:
@@ -97,7 +100,7 @@ def index(request):
             scan_port = scan_port_temp.split('}')[0]
             
             try:
-                rescan(scan_address, scan_port, AUTH_USER, KEYFILE)
+                rescan(scan_address, scan_port, AUTH_USER, KEYFILE, queue1)
                 list_of_hosts = Hosts.objects.values_list('hostaddr', flat=True)
         
                 new_host_list = []
@@ -267,7 +270,8 @@ def installed(request):
 
 @login_required
 def scan(request):
-
+    
+    queue1 = multiprocessing.Queue()
     check_result = syscheck()
     if check_result:
         messages.error(request, check_result)
@@ -283,7 +287,7 @@ def scan(request):
                 else:
                     scan_port = request.POST['sshport']
                 scan_address = request.POST['address']
-                rescan(scan_address, scan_port, AUTH_USER, KEYFILE)
+                rescan(scan_address, scan_port, AUTH_USER, KEYFILE, queue1)
                 messages.success(request, 'Scan successful - details added.')
                 return render(request, 'spruce/scan.html')
 
@@ -449,9 +453,12 @@ def upload_file(request):
                         system_list.append([ip_address, str(connect_port)])
 
             
-            multi_system_scan(system_list, AUTH_USER, KEYFILE)
-            messages.success(request, 'All systems were scanned. Please check the index.')
-        return render(request, 'spruce/upload_inventory.html')
+            #multi_system_scan(system_list, AUTH_USER, KEYFILE)
+            result_list = multi_system_scan(system_list, AUTH_USER, KEYFILE)
+            #result_list = "\n".join(item[0] for item in result_list)
+            #messages.success(request, result_list)
+            resultList = {'result_list': result_list}
+        return render(request, 'spruce/upload_inventory.html', context=resultList)
     except:
         messages.error(request, 'An error occurred. Please try again.')
         return render(request, 'spruce/upload_inventory.html')
