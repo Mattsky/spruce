@@ -17,6 +17,16 @@
 			</div>
 			<hr>
 			{% endif %}
+
+			{% if scan_result %}
+				<div class="center_div text-center">
+				{% for elem in scan_result %}
+					{{ elem.0 }}<br>
+				{% endfor %}
+				</div>
+				<hr>
+			{% endif %}
+
 		<div class="center_div text-center">
 			{% if output %}		
 			<form method="POST" runat="server" onsubmit="ShowLoading()">

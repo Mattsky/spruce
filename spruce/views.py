@@ -374,17 +374,18 @@ def gcloud_scan(request):
                     system_scan_list.append([line[4],"22"])
                 print(system_scan_list)
                 scan_result = multi_system_rescan(system_scan_list, AUTH_USER, KEYFILE)
-                print(scan_result)
-                messages.info(request, scan_result)
+                #print(scan_result)
+                #messages.info(request, scan_result)
             if 'external_scan' in request.POST.keys() and request.POST['external_scan']:
                 print("EXTERNAL")
                 for line in output:
                     system_scan_list.append([line[5],"22"])
                 print(system_scan_list)
                 scan_result = multi_system_rescan(system_scan_list, AUTH_USER, KEYFILE)
-                print(scan_result)
-                messages.info(request, scan_result)
-        return render(request, 'spruce/gcloud.html', {'output': output})
+                #print(scan_result)
+                #messages.info(request, scan_result)
+                #return render(request, 'spruce/upload_inventory.html', context=resultList)
+        return render(request, 'spruce/gcloud.html', {'output': output, 'scan_result': scan_result})
 
     except:
         print("OHNOES")
@@ -455,8 +456,6 @@ def upload_file(request):
             
             #multi_system_scan(system_list, AUTH_USER, KEYFILE)
             result_list = multi_system_scan(system_list, AUTH_USER, KEYFILE)
-            #result_list = "\n".join(item[0] for item in result_list)
-            #messages.success(request, result_list)
             resultList = {'result_list': result_list}
         return render(request, 'spruce/upload_inventory.html', context=resultList)
     except:
